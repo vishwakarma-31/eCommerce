@@ -1,0 +1,48 @@
+import React from 'react';
+
+const Button = ({ 
+  children, 
+  variant = 'primary', 
+  size = 'md', 
+  disabled = false, 
+  onClick, 
+  className = '',
+  type = 'button',
+  ...props 
+}) => {
+  const baseClasses = 'inline-flex items-center justify-center rounded-md font-medium transition-all duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-offset-2 transform hover:scale-[1.02] active:scale-[0.98]';
+  
+  const variantClasses = {
+    primary: 'bg-primary-gradient text-white hover:shadow-lg focus:ring-primary-500',
+    secondary: 'bg-secondary-500 text-white hover:bg-secondary-600 focus:ring-secondary-500',
+    success: 'bg-success-500 text-white hover:bg-success-600 focus:ring-success-500',
+    warning: 'bg-warning-500 text-white hover:bg-warning-600 focus:ring-warning-500',
+    danger: 'bg-error-500 text-white hover:bg-error-600 focus:ring-error-500',
+    outline: 'border border-primary-300 bg-white text-primary-700 hover:bg-primary-50 focus:ring-primary-500',
+    ghost: 'text-primary-700 hover:bg-primary-50 focus:ring-primary-500'
+  };
+  
+  const sizeClasses = {
+    sm: 'px-3 py-1.5 text-sm',
+    md: 'px-4 py-2 text-sm',
+    lg: 'px-6 py-3 text-base'
+  };
+  
+  const disabledClasses = 'opacity-50 cursor-not-allowed';
+  
+  const classes = `${baseClasses} ${variantClasses[variant]} ${sizeClasses[size]} ${disabled ? disabledClasses : ''} ${className}`;
+  
+  return (
+    <button
+      type={type}
+      className={classes}
+      onClick={onClick}
+      disabled={disabled}
+      {...props}
+    >
+      {children}
+    </button>
+  );
+};
+
+export default Button;

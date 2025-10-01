@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>LaunchPad Market - Health Check</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 40px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+        }
+        .status {
+            text-align: center;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        .success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .info {
+            background-color: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+            padding: 15px;
+            margin: 15px 0;
+        }
+        ul {
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>LaunchPad Market - Deployment Health Check</h1>
+        
+        <div class="status success">
+            <h2>✅ Deployment Successful</h2>
+            <p>The LaunchPad Market application has been successfully deployed!</p>
+        </div>
+        
+        <div class="info">
+            <h3>Deployment Information</h3>
+            <ul>
+                <li><strong>Application:</strong> LaunchPad Market - Advanced Co-Creation E-commerce Platform</li>
+                <li><strong>Status:</strong> Running</li>
+                <li><strong>Version:</strong> 1.0.0</li>
+                <li><strong>Environment:</strong> Production</li>
+            </ul>
+        </div>
+        
+        <div class="info">
+            <h3>Access Points</h3>
+            <ul>
+                <li><strong>Frontend:</strong> <a href="/">Main Application</a></li>
+                <li><strong>Backend API:</strong> <a href="/api/health">Health Check Endpoint</a></li>
+                <li><strong>Documentation:</strong> See README.md for detailed information</li>
+            </ul>
+        </div>
+        
+        <div class="info">
+            <h3>Next Steps</h3>
+            <ul>
+                <li>Verify all environment variables are correctly configured</li>
+                <li>Test user authentication and authorization</li>
+                <li>Check database connectivity</li>
+                <li>Verify payment processing integration</li>
+                <li>Test all major user flows (registration, product browsing, purchasing, etc.)</li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>

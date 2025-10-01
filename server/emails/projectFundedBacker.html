@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project You Backed Has Been Funded!</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #10b981;
+            padding-bottom: 20px;
+        }
+        .header h1 {
+            color: #10b981;
+            margin: 0;
+        }
+        .content {
+            margin-bottom: 30px;
+        }
+        .button {
+            display: inline-block;
+            background-color: #10b981;
+            color: white;
+            padding: 12px 24px;
+            text-decoration: none;
+            border-radius: 4px;
+            font-weight: bold;
+            margin: 20px 0;
+        }
+        .footer {
+            text-align: center;
+            font-size: 0.9em;
+            color: #666;
+            border-top: 1px solid #eee;
+            padding-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Project Successfully Funded!</h1>
+        </div>
+        
+        <div class="content">
+            <p>Hi {{name}},</p>
+            
+            <p>Exciting news! The project <strong>"{{projectName}}"</strong> that you backed has successfully reached its funding goal.</p>
+            
+            <p>This means the creator can now move forward with production, and you'll be among the first to receive the product when it's ready.</p>
+            
+            <p>What happens next:</p>
+            <ul>
+                <li>Your payment will be processed and captured</li>
+                <li>The creator will begin production of the product</li>
+                <li>You'll receive updates throughout the production process</li>
+                <li>You'll be notified when the product is ready to ship</li>
+            </ul>
+            
+            <div style="text-align: center;">
+                <a href="{{projectUrl}}" class="button">View Project Updates</a>
+            </div>
+            
+            <p>Thank you for supporting innovation on LaunchPad Market!</p>
+            
+            <p>Best regards,<br>
+            The LaunchPad Market Team</p>
+        </div>
+        
+        <div class="footer">
+            <p>&copy; 2025 LaunchPad Market. All rights reserved.</p>
+        </div>
+    </div>
+</body>
+</html>

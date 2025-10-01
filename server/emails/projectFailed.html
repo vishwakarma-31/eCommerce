@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Project Did Not Reach Funding Goal</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #ef4444;
+            padding-bottom: 20px;
+        }
+        .header h1 {
+            color: #ef4444;
+            margin: 0;
+        }
+        .content {
+            margin-bottom: 30px;
+        }
+        .stats {
+            background-color: #fef2f2;
+            padding: 15px;
+            border-radius: 6px;
+            margin: 20px 0;
+            border-left: 4px solid #ef4444;
+        }
+        .button {
+            display: inline-block;
+            background-color: #ef4444;
+            color: white;
+            padding: 12px 24px;
+            text-decoration: none;
+            border-radius: 4px;
+            font-weight: bold;
+            margin: 20px 0;
+        }
+        .footer {
+            text-align: center;
+            font-size: 0.9em;
+            color: #666;
+            border-top: 1px solid #eee;
+            padding-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Project Update, {{name}}</h1>
+        </div>
+        
+        <div class="content">
+            <p>We're sorry to inform you that your project <strong>"{{projectName}}"</strong> did not reach its funding goal.</p>
+            
+            <div class="stats">
+                <p><strong>Funding Goal:</strong> {{fundingGoal}} backers</p>
+                <p><strong>Funding Achieved:</strong> {{currentFunding}} backers</p>
+            </div>
+            
+            <p>While this news may be disappointing, it's important to remember that many successful projects have faced similar challenges. We encourage you to:</p>
+            
+            <ul>
+                <li>Review feedback from potential backers</li>
+                <li>Consider adjusting your funding goal or project details</li>
+                <li>Reach out to your network for additional support</li>
+                <li>Re-launch your project with improvements</li>
+            </ul>
+            
+            <p>No payments were captured from backers, as per our all-or-nothing funding model.</p>
+            
+            <div style="text-align: center;">
+                <a href="{{projectUrl}}" class="button">Review Your Project</a>
+            </div>
+            
+            <p>If you'd like guidance on how to improve your project for a relaunch, our creator support team is here to help.</p>
+            
+            <p>Best regards,<br>
+            The LaunchPad Market Team</p>
+        </div>
+        
+        <div class="footer">
+            <p>&copy; 2025 LaunchPad Market. All rights reserved.</p>
+        </div>
+    </div>
+</body>
+</html>

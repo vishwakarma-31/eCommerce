@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Project Has Been Funded!</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #10b981;
+            padding-bottom: 20px;
+        }
+        .header h1 {
+            color: #10b981;
+            margin: 0;
+        }
+        .content {
+            margin-bottom: 30px;
+        }
+        .stats {
+            background-color: #f0fdf4;
+            padding: 15px;
+            border-radius: 6px;
+            margin: 20px 0;
+            border-left: 4px solid #10b981;
+        }
+        .button {
+            display: inline-block;
+            background-color: #10b981;
+            color: white;
+            padding: 12px 24px;
+            text-decoration: none;
+            border-radius: 4px;
+            font-weight: bold;
+            margin: 20px 0;
+        }
+        .footer {
+            text-align: center;
+            font-size: 0.9em;
+            color: #666;
+            border-top: 1px solid #eee;
+            padding-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Congratulations, {{name}}!</h1>
+        </div>
+        
+        <div class="content">
+            <p>Great news! Your project <strong>"{{projectName}}"</strong> has been successfully funded!</p>
+            
+            <div class="stats">
+                <p><strong>Funding Goal:</strong> {{fundingGoal}} backers</p>
+                <p><strong>Funding Achieved:</strong> {{currentFunding}} backers</p>
+            </div>
+            
+            <p>This is an exciting milestone! Your project has reached its funding goal and will now move into the production phase.</p>
+            
+            <p>Here's what happens next:</p>
+            <ol>
+                <li>Payments will be captured from all backers</li>
+                <li>You'll receive instructions for production and fulfillment</li>
+                <li>We'll help you connect with our network of manufacturers</li>
+                <li>Regular updates will be sent to your backers throughout the process</li>
+            </ol>
+            
+            <div style="text-align: center;">
+                <a href="{{projectUrl}}" class="button">View Your Project</a>
+            </div>
+            
+            <p>If you have any questions about the next steps, please contact our creator support team.</p>
+            
+            <p>Congratulations again,<br>
+            The LaunchPad Market Team</p>
+        </div>
+        
+        <div class="footer">
+            <p>&copy; 2025 LaunchPad Market. All rights reserved.</p>
+        </div>
+    </div>
+</body>
+</html>

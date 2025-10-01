@@ -1,0 +1,195 @@
+.App {
+  text-align: center;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: #f9fafb;
+}
+
+.App-header {
+  background: linear-gradient(to right, #6366f1, #8b5cf6);
+  padding: 20px;
+  color: white;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.App-header h1 {
+  margin: 0;
+  font-size: 2.5rem;
+  font-weight: 700;
+}
+
+.App-header p {
+  margin: 5px 0;
+  font-size: 1.2rem;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+main {
+  flex: 1;
+  padding: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.hero {
+  text-align: center;
+  margin-bottom: 40px;
+  padding: 40px 20px;
+  border-radius: 12px;
+  background: white;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+}
+
+.hero h2 {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #111827;
+  margin-bottom: 16px;
+}
+
+.hero p {
+  font-size: 1.1rem;
+  color: #6b7280;
+  max-width: 800px;
+  margin: 0 auto 24px;
+  line-height: 1.6;
+}
+
+.features {
+  display: flex;
+  justify-content: space-around;
+  flex-wrap: wrap;
+  gap: 20px;
+  margin-bottom: 40px;
+}
+
+.feature {
+  flex: 1;
+  min-width: 250px;
+  padding: 24px;
+  border-radius: 12px;
+  background-color: white;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+}
+
+.feature:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+}
+
+.feature h3 {
+  margin-top: 0;
+  color: #111827;
+  font-weight: 600;
+  font-size: 1.25rem;
+}
+
+footer {
+  background: linear-gradient(to right, #6366f1, #8b5cf6);
+  color: white;
+  text-align: center;
+  padding: 20px;
+  margin-top: auto;
+}
+
+/* Responsive breakpoints */
+@media (max-width: 1024px) {
+  .App-header h1 {
+    font-size: 2rem;
+  }
+  
+  .hero h2 {
+    font-size: 1.75rem;
+  }
+  
+  .hero p {
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .features {
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .feature {
+    width: 90%;
+    min-width: unset;
+  }
+  
+  .App-header {
+    padding: 15px;
+  }
+  
+  .App-header h1 {
+    font-size: 1.75rem;
+  }
+  
+  main {
+    padding: 15px;
+  }
+}
+
+@media (max-width: 480px) {
+  .App-header h1 {
+    font-size: 1.5rem;
+  }
+  
+  .hero {
+    padding: 20px 15px;
+  }
+  
+  .hero h2 {
+    font-size: 1.5rem;
+  }
+}
+
+/* Dark mode ready structure */
+@media (prefers-color-scheme: dark) {
+  .App {
+    background-color: #1f2937;
+    color: #f9fafb;
+  }
+  
+  .hero, .feature {
+    background-color: #374151;
+    color: #f9fafb;
+  }
+  
+  .hero h2, .feature h3 {
+    color: #f9fafb;
+  }
+  
+  .hero p, .feature p {
+    color: #d1d5db;
+  }
+}
+
+/* Accessibility enhancements */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Focus indicators for accessibility */
+a:focus, button:focus {
+  outline: 2px solid #14b8a6;
+  outline-offset: 2px;
+}
+
+/* Ensure sufficient color contrast */
+.text-high-contrast {
+  color: #111827;
+}
+
+.text-medium-contrast {
+  color: #6b7280;
+}

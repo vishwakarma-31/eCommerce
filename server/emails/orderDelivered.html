@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Order Has Been Delivered</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #10b981;
+            padding-bottom: 20px;
+        }
+        .header h1 {
+            color: #10b981;
+            margin: 0;
+        }
+        .content {
+            margin-bottom: 30px;
+        }
+        .delivery-details {
+            background-color: #f0fdf4;
+            padding: 15px;
+            border-radius: 6px;
+            margin: 20px 0;
+            border-left: 4px solid #10b981;
+        }
+        .button {
+            display: inline-block;
+            background-color: #10b981;
+            color: white;
+            padding: 12px 24px;
+            text-decoration: none;
+            border-radius: 4px;
+            font-weight: bold;
+            margin: 20px 0;
+        }
+        .footer {
+            text-align: center;
+            font-size: 0.9em;
+            color: #666;
+            border-top: 1px solid #eee;
+            padding-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Order Delivered Successfully!</h1>
+        </div>
+        
+        <div class="content">
+            <p>Hi {{name}},</p>
+            
+            <p>We're happy to let you know that your order #{{orderId}} has been successfully delivered!</p>
+            
+            <div class="delivery-details">
+                <p><strong>Delivered On:</strong> {{deliveredAt}}</p>
+            </div>
+            
+            <p>We hope you're enjoying your new product. If you have any questions or concerns, please don't hesitate to reach out to our customer support team.</p>
+            
+            <p>We'd love to hear your feedback! If you have a moment, please consider leaving a review of your purchased items.</p>
+            
+            <div style="text-align: center;">
+                <a href="{{orderUrl}}" class="button">Leave a Review</a>
+            </div>
+            
+            <p>Thank you for choosing LaunchPad Market!</p>
+            
+            <p>Best regards,<br>
+            The LaunchPad Market Team</p>
+        </div>
+        
+        <div class="footer">
+            <p>&copy; 2025 LaunchPad Market. All rights reserved.</p>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project You Backed Did Not Reach Funding Goal</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #ef4444;
+            padding-bottom: 20px;
+        }
+        .header h1 {
+            color: #ef4444;
+            margin: 0;
+        }
+        .content {
+            margin-bottom: 30px;
+        }
+        .button {
+            display: inline-block;
+            background-color: #ef4444;
+            color: white;
+            padding: 12px 24px;
+            text-decoration: none;
+            border-radius: 4px;
+            font-weight: bold;
+            margin: 20px 0;
+        }
+        .footer {
+            text-align: center;
+            font-size: 0.9em;
+            color: #666;
+            border-top: 1px solid #eee;
+            padding-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Project Update</h1>
+        </div>
+        
+        <div class="content">
+            <p>Hi {{name}},</p>
+            
+            <p>We're writing to inform you that the project <strong>"{{projectName}}"</strong> you backed did not reach its funding goal within the deadline.</p>
+            
+            <p>As per our all-or-nothing funding model, no charges were made to your payment method. Your card authorization has been canceled.</p>
+            
+            <p>What this means:</p>
+            <ul>
+                <li>You will not be charged for backing this project</li>
+                <li>The creator will not move forward with production</li>
+                <li>You can explore other projects that interest you</li>
+            </ul>
+            
+            <p>We appreciate your support for innovation, and we encourage you to continue exploring new projects on LaunchPad Market.</p>
+            
+            <div style="text-align: center;">
+                <a href="{{clientUrl}}" class="button">Discover More Projects</a>
+            </div>
+            
+            <p>Thank you for being part of our community.</p>
+            
+            <p>Best regards,<br>
+            The LaunchPad Market Team</p>
+        </div>
+        
+        <div class="footer">
+            <p>&copy; 2025 LaunchPad Market. All rights reserved.</p>
+        </div>
+    </div>
+</body>
+</html>
