@@ -116,12 +116,12 @@ const productConceptSchema = new mongoose.Schema({
 });
 
 // Critical Indexes for Performance
-productConceptSchema.index({ creator: 1 });
-productConceptSchema.index({ category: 1 });
-productConceptSchema.index({ status: 1 });
-productConceptSchema.index({ slug: 1 }, { unique: true });
-productConceptSchema.index({ deadline: 1 });
-productConceptSchema.index({ createdAt: -1 });
-productConceptSchema.index({ title: 'text', description: 'text', tags: 'text' }); // Text search
+productConceptSchema.index({ creator: 1 }); // Index for querying by creator
+productConceptSchema.index({ category: 1 }); // Index for category-based queries
+productConceptSchema.index({ status: 1 }); // Index for status-based queries
+productConceptSchema.index({ slug: 1 }, { unique: true }); // Unique index for slug lookups
+productConceptSchema.index({ deadline: 1 }); // Index for deadline-based queries (cron jobs)
+productConceptSchema.index({ createdAt: -1 }); // Index for sorting by creation date
+productConceptSchema.index({ title: 'text', description: 'text', tags: 'text' }); // Text search index
 
 module.exports = mongoose.model('ProductConcept', productConceptSchema);

@@ -33,6 +33,13 @@
         .content {
             margin-bottom: 30px;
         }
+        .info {
+            background-color: #fef2f2;
+            padding: 15px;
+            border-radius: 6px;
+            margin: 20px 0;
+            border-left: 4px solid #ef4444;
+        }
         .button {
             display: inline-block;
             background-color: #ef4444;
@@ -55,30 +62,28 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>Project Update</h1>
+            <h1>Project Funding Update</h1>
         </div>
         
         <div class="content">
             <p>Hi {{name}},</p>
             
-            <p>We're writing to inform you that the project <strong>"{{projectName}}"</strong> you backed did not reach its funding goal within the deadline.</p>
+            <p>We're sorry to inform you that the project <strong>"{{projectName}}"</strong> you backed did not reach its funding goal within the deadline.</p>
             
-            <p>As per our all-or-nothing funding model, no charges were made to your payment method. Your card authorization has been canceled.</p>
-            
-            <p>What this means:</p>
-            <ul>
-                <li>You will not be charged for backing this project</li>
-                <li>The creator will not move forward with production</li>
-                <li>You can explore other projects that interest you</li>
-            </ul>
-            
-            <p>We appreciate your support for innovation, and we encourage you to continue exploring new projects on LaunchPad Market.</p>
-            
-            <div style="text-align: center;">
-                <a href="{{clientUrl}}" class="button">Discover More Projects</a>
+            <div class="info">
+                <p><strong>No charges have been made to your card.</strong></p>
+                <p>Your payment authorization was canceled, and no money has been transferred.</p>
             </div>
             
-            <p>Thank you for being part of our community.</p>
+            <p>We understand this might be disappointing. The creator may choose to relaunch the project with improvements in the future.</p>
+            
+            <p>Thank you for supporting innovation on LaunchPad Market. Your backing helps creators gauge interest in their ideas, even when projects don't reach their funding goals.</p>
+            
+            <div style="text-align: center;">
+                <a href="{{projectUrl}}" class="button">View Project</a>
+            </div>
+            
+            <p>If you have any questions, please contact our support team.</p>
             
             <p>Best regards,<br>
             The LaunchPad Market Team</p>

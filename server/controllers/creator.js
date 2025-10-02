@@ -1,4 +1,4 @@
-const ProductConcept = require('../models/Product');
+const ProductConcept = require('../models/ProductConcept');
 const PreOrder = require('../models/PreOrder');
 const Order = require('../models/Order');
 const { protect, isCreator } = require('../middleware/auth');

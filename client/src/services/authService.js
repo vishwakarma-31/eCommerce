@@ -1,4 +1,4 @@
-import api from './api';
+import API from './api';
 import { handleApiError, retryApiCall } from '../utils/errorHandler';
 
 // Helper function to sanitize input to prevent XSS
@@ -19,7 +19,7 @@ const authService = {
     };
     
     try {
-      const response = await api.post('/auth/register', sanitizedData);
+      const response = await API.post('/auth/register', sanitizedData);
       return response.data;
     } catch (error) {
       handleApiError(error, 'Failed to register user. Please try again.');
@@ -36,7 +36,7 @@ const authService = {
     };
     
     try {
-      const response = await api.post('/auth/login', sanitizedCredentials);
+      const response = await API.post('/auth/login', sanitizedCredentials);
       return response.data;
     } catch (error) {
       handleApiError(error, 'Failed to login. Please check your credentials.');
@@ -47,7 +47,7 @@ const authService = {
   // Get current user profile
   getCurrentUser: async () => {
     try {
-      const response = await api.get('/auth/me');
+      const response = await API.get('/auth/me');
       return response.data;
     } catch (error) {
       handleApiError(error, 'Failed to fetch user profile.');
@@ -68,7 +68,7 @@ const authService = {
     }
     
     try {
-      const response = await api.put('/auth/me', sanitizedData);
+      const response = await API.put('/auth/me', sanitizedData);
       return response.data;
     } catch (error) {
       handleApiError(error, 'Failed to update profile. Please try again.');
@@ -79,7 +79,7 @@ const authService = {
   // Change password
   changePassword: async (passwordData) => {
     try {
-      const response = await api.put('/auth/change-password', passwordData);
+      const response = await API.put('/auth/change-password', passwordData);
       return response.data;
     } catch (error) {
       handleApiError(error, 'Failed to change password. Please try again.');
@@ -91,7 +91,7 @@ const authService = {
   forgotPassword: async (email) => {
     const sanitizedEmail = sanitizeInput(email);
     try {
-      const response = await api.post('/auth/forgot-password', { email: sanitizedEmail });
+      const response = await API.post('/auth/forgot-password', { email: sanitizedEmail });
       return response.data;
     } catch (error) {
       handleApiError(error, 'Failed to send password reset email. Please try again.');
@@ -102,7 +102,7 @@ const authService = {
   // Reset password
   resetPassword: async (resetData) => {
     try {
-      const response = await api.post('/auth/reset-password', resetData);
+      const response = await API.post('/auth/reset-password', resetData);
       return response.data;
     } catch (error) {
       handleApiError(error, 'Failed to reset password. Please try again.');

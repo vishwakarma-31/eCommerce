@@ -31,4 +31,8 @@ const commentSchema = new mongoose.Schema({
   timestamps: true
 });
 
+// Critical Indexes for Performance
+commentSchema.index({ productConcept: 1 }); // Index for querying comments by product
+commentSchema.index({ author: 1 }); // Index for querying comments by author
+
 module.exports = mongoose.model('Comment', commentSchema);

@@ -1,5 +1,5 @@
 const User = require('../models/User');
-const ProductConcept = require('../models/Product');
+const ProductConcept = require('../models/ProductConcept');
 const Review = require('../models/Review');
 const Comment = require('../models/Comment');
 const asyncHandler = require('../middleware/asyncHandler');

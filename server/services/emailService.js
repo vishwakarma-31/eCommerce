@@ -103,7 +103,8 @@ const sendWelcomeEmail = async (user) => {
     template: 'welcome',
     data: {
       name: user.name,
-      email: user.email
+      email: user.email,
+      clientUrl: process.env.CLIENT_URL || 'http://localhost:5173'
     }
   });
 };
@@ -213,7 +214,7 @@ const sendOrderShippedEmail = async (order, user) => {
     data: {
       name: user.name,
       orderId: order._id,
-      trackingNumber: order.trackingNumber,
+      trackingNumber: order.trackingNumber || 'Not available yet',
       estimatedDelivery: order.estimatedDelivery 
         ? new Date(order.estimatedDelivery).toLocaleDateString() 
         : 'To be determined',
@@ -300,6 +301,7 @@ const sendProjectUpdateEmail = async (project, backers, updateTitle, updateConte
       data: {
         name: backer.name,
         projectName: project.title,
+        creatorName: project.creator.name,
         updateTitle: updateTitle,
         updateContent: updateContent,
         projectUrl: `${process.env.CLIENT_URL || 'http://localhost:5173'}/products/${project.slug}`

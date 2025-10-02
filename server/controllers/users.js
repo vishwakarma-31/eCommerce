@@ -1,5 +1,5 @@
 const User = require('../models/User');
-const ProductConcept = require('../models/Product');
+const ProductConcept = require('../models/ProductConcept');
 const { protect, isAdmin, isBacker } = require('../middleware/auth');
 
 // Get public user profile

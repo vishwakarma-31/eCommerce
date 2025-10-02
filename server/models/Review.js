@@ -42,8 +42,8 @@ const reviewSchema = new mongoose.Schema({
 });
 
 // Critical Indexes for Performance
-reviewSchema.index({ product: 1 });
-reviewSchema.index({ author: 1 });
+reviewSchema.index({ product: 1 }); // Index for querying reviews by product
+reviewSchema.index({ author: 1 }); // Index for querying reviews by author
 
 // Ensure a user can only review a product once
 reviewSchema.index({ product: 1, author: 1 }, { unique: true });

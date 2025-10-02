@@ -57,38 +57,48 @@
             border-top: 1px solid #eee;
             padding-top: 20px;
         }
+        .tip {
+            background-color: #eff6ff;
+            padding: 15px;
+            border-radius: 6px;
+            margin: 20px 0;
+            border-left: 4px solid #3b82f6;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <h1>Project Update, {{name}}</h1>
+            <h1>Project Funding Update</h1>
         </div>
         
         <div class="content">
-            <p>We're sorry to inform you that your project <strong>"{{projectName}}"</strong> did not reach its funding goal.</p>
+            <p>Hi {{name}},</p>
+            
+            <p>We're sorry to inform you that your project <strong>"{{projectName}}"</strong> did not reach its funding goal within the deadline.</p>
             
             <div class="stats">
                 <p><strong>Funding Goal:</strong> {{fundingGoal}} backers</p>
                 <p><strong>Funding Achieved:</strong> {{currentFunding}} backers</p>
             </div>
             
-            <p>While this news may be disappointing, it's important to remember that many successful projects have faced similar challenges. We encourage you to:</p>
+            <p>Don't be discouraged! Many successful projects didn't reach their funding goals on the first attempt. Here are some suggestions to improve your chances next time:</p>
             
-            <ul>
-                <li>Review feedback from potential backers</li>
-                <li>Consider adjusting your funding goal or project details</li>
-                <li>Reach out to your network for additional support</li>
-                <li>Re-launch your project with improvements</li>
-            </ul>
-            
-            <p>No payments were captured from backers, as per our all-or-nothing funding model.</p>
-            
-            <div style="text-align: center;">
-                <a href="{{projectUrl}}" class="button">Review Your Project</a>
+            <div class="tip">
+                <p><strong>Tips for Success:</strong></p>
+                <ul>
+                    <li>Engage more actively with your community before and during the campaign</li>
+                    <li>Share your project on social media and with friends and family</li>
+                    <li>Consider offering more attractive rewards for backers</li>
+                    <li>Provide detailed updates and behind-the-scenes content</li>
+                </ul>
             </div>
             
-            <p>If you'd like guidance on how to improve your project for a relaunch, our creator support team is here to help.</p>
+            <div style="text-align: center;">
+                <a href="{{projectUrl}}" class="button">View Your Project</a>
+            </div>
+            
+            <p>If you'd like to relaunch your project, you can make improvements and try again. Our team is here to help you succeed.</p>
             
             <p>Best regards,<br>
             The LaunchPad Market Team</p>

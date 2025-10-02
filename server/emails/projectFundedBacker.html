@@ -33,6 +33,13 @@
         .content {
             margin-bottom: 30px;
         }
+        .info {
+            background-color: #f0fdf4;
+            padding: 15px;
+            border-radius: 6px;
+            margin: 20px 0;
+            border-left: 4px solid #10b981;
+        }
         .button {
             display: inline-block;
             background-color: #10b981;
@@ -61,23 +68,22 @@
         <div class="content">
             <p>Hi {{name}},</p>
             
-            <p>Exciting news! The project <strong>"{{projectName}}"</strong> that you backed has successfully reached its funding goal.</p>
+            <p>Great news! The project <strong>"{{projectName}}"</strong> you backed has successfully reached its funding goal!</p>
             
-            <p>This means the creator can now move forward with production, and you'll be among the first to receive the product when it's ready.</p>
-            
-            <p>What happens next:</p>
-            <ul>
-                <li>Your payment will be processed and captured</li>
-                <li>The creator will begin production of the product</li>
-                <li>You'll receive updates throughout the production process</li>
-                <li>You'll be notified when the product is ready to ship</li>
-            </ul>
-            
-            <div style="text-align: center;">
-                <a href="{{projectUrl}}" class="button">View Project Updates</a>
+            <div class="info">
+                <p><strong>Your card will be charged soon.</strong></p>
+                <p>The payment authorization will be captured, and the amount will be transferred to the creator.</p>
             </div>
             
-            <p>Thank you for supporting innovation on LaunchPad Market!</p>
+            <p>The creator will now move into the production phase. You'll receive updates on the project's progress throughout the production and fulfillment process.</p>
+            
+            <p>Thank you for supporting innovation on LaunchPad Market. Your backing makes projects like this possible!</p>
+            
+            <div style="text-align: center;">
+                <a href="{{projectUrl}}" class="button">View Project</a>
+            </div>
+            
+            <p>If you have any questions, please contact our support team.</p>
             
             <p>Best regards,<br>
             The LaunchPad Market Team</p>

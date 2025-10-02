@@ -1,4 +1,4 @@
-import api from './api';
+import API from './api';
 
 // Simple in-memory cache for filter options
 const cache = new Map();
@@ -36,7 +36,7 @@ const searchService = {
       if (page) searchParams.append('page', page);
       if (limit) searchParams.append('limit', limit);
       
-      const response = await api.get(`/products/search?${searchParams.toString()}`);
+      const response = await API.get(`/products/search?${searchParams.toString()}`);
       return response.data;
     } catch (error) {
       throw error;
@@ -72,7 +72,7 @@ const searchService = {
       if (page) searchParams.append('page', page);
       if (limit) searchParams.append('limit', limit);
       
-      const response = await api.get(`/products?${searchParams.toString()}`);
+      const response = await API.get(`/products?${searchParams.toString()}`);
       return response.data;
     } catch (error) {
       throw error;

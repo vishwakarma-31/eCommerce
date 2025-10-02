@@ -29,15 +29,12 @@ const createPaymentIntent = async (req, res) => {
       metadata: {
         productConceptId: productConceptId,
         userId: req.user._id.toString(),
-        quantity: quantity
+        quantity: quantity.toString()
       }
     });
     
     res.status(200).json({
-      paymentIntent: {
-        id: paymentIntent.id,
-        client_secret: paymentIntent.client_secret
-      }
+      clientSecret: paymentIntent.client_secret
     });
   } catch (error) {
     console.error('Error creating payment intent:', error);
@@ -77,6 +74,7 @@ const createPreOrder = async (req, res) => {
       quantity,
       totalPrice: totalAmount,
       stripePaymentIntentId,
+      status: 'Authorized', // Set initial status to Authorized
       shippingAddress
     });
     

@@ -1,17 +1,14 @@
 import axios from 'axios';
-import { handleApiError } from '../utils/errorHandler';
 
-// Create an axios instance with default configuration
-const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:5000/api',
-  timeout: 10000,
+const API = axios.create({
+  baseURL: import.meta.env.VITE_API_URL,
   headers: {
     'Content-Type': 'application/json'
   }
 });
 
-// Request interceptor to add auth token to requests
-api.interceptors.request.use(
+// Request interceptor to add token
+API.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem('token');
     if (token) {
@@ -19,28 +16,20 @@ api.interceptors.request.use(
     }
     return config;
   },
-  (error) => {
-    return Promise.reject(error);
-  }
+  (error) => Promise.reject(error)
 );
 
-// Response interceptor to handle errors
-api.interceptors.response.use(
-  (response) => {
-    return response;
-  },
+// Response interceptor for error handling
+API.interceptors.response.use(
+  (response) => response,
   (error) => {
     if (error.response?.status === 401) {
-      // Handle unauthorized access
+      // Token expired - redirect to login
       localStorage.removeItem('token');
-      localStorage.removeItem('user');
       window.location.href = '/login';
-    } else {
-      // Handle other errors
-      handleApiError(error);
     }
     return Promise.reject(error);
   }
 );
 
-export default api;
+export default API;

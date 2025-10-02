@@ -5,9 +5,10 @@ const helmet = require('helmet');
 const morgan = require('morgan');
 const rateLimit = require('express-rate-limit');
 const mongoSanitize = require('express-mongo-sanitize');
-const compression = require('compression'); // Add compression middleware
+const compression = require('compression');
 const fs = require('fs').promises;
 const path = require('path');
+const https = require('https');
 const logger = require('./utils/logger');
 require('dotenv').config();
 
@@ -156,7 +157,7 @@ app.get('/health', (req, res) => {
 });
 
 // 404 handler
-app.use('*', (req, res, next) => {
+app.use((req, res, next) => {
   const error = new Error(`Can't find ${req.originalUrl} on this server!`);
   error.statusCode = 404;
   next(error);
@@ -167,7 +168,7 @@ app.use(require('./middleware/errorMiddleware').errorHandler);
 
 // Connect to MongoDB
 mongoose
-  .connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/launchpadmarket')
+  .connect(process.env.MONGO_URI || 'mongodb://localhost:27017/launchpadmarket')
   .then(() => {
     logger.info('Connected to MongoDB');
     
@@ -177,9 +178,31 @@ mongoose
     
     // Start server
     const PORT = process.env.PORT || 5000;
-    app.listen(PORT, () => {
-      logger.info(`Server running on port ${PORT}`);
-    });
+    
+    // Check if HTTPS is enabled
+    if (process.env.HTTPS === 'true') {
+      // HTTPS configuration
+      const sslOptions = {
+        key: process.env.SSL_KEY_PATH ? fs.readFileSync(process.env.SSL_KEY_PATH) : null,
+        cert: process.env.SSL_CERT_PATH ? fs.readFileSync(process.env.SSL_CERT_PATH) : null
+      };
+      
+      if (sslOptions.key && sslOptions.cert) {
+        https.createServer(sslOptions, app).listen(PORT, () => {
+          logger.info(`HTTPS Server running on port ${PORT}`);
+        });
+      } else {
+        logger.warn('HTTPS enabled but certificate files not found. Starting HTTP server instead.');
+        app.listen(PORT, () => {
+          logger.info(`HTTP Server running on port ${PORT}`);
+        });
+      }
+    } else {
+      // HTTP configuration
+      app.listen(PORT, () => {
+        logger.info(`HTTP Server running on port ${PORT}`);
+      });
+    }
   })
   .catch((error) => {
     logger.error('Connection error', error.message);

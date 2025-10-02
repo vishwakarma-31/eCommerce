@@ -1,5 +1,5 @@
 const User = require('../models/User');
-const ProductConcept = require('../models/Product');
+const ProductConcept = require('../models/ProductConcept');
 const Order = require('../models/Order');
 const PreOrder = require('../models/PreOrder');
 const { protect, isAdmin } = require('../middleware/auth');

@@ -82,8 +82,8 @@ const orderSchema = new mongoose.Schema({
 });
 
 // Critical Indexes for Performance
-orderSchema.index({ buyer: 1 });
-orderSchema.index({ orderStatus: 1 });
-orderSchema.index({ createdAt: -1 });
+orderSchema.index({ buyer: 1 }); // Index for querying orders by buyer
+orderSchema.index({ orderStatus: 1 }); // Index for status-based queries
+orderSchema.index({ createdAt: -1 }); // Index for sorting by creation date
 
 module.exports = mongoose.model('Order', orderSchema);

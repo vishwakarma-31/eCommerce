@@ -1,93 +1,104 @@
 import React, { useState, useEffect } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
-import productService from '../services/productService';
-import ProductComparison from '../components/product/ProductComparison';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
+import api from '../services/api';
+import ProductComparisonTable from '../components/comparison/ProductComparisonTable';
 import Loader from '../components/common/Loader';
+import { toast } from 'react-toastify';
 
 const ProductComparisonPage = () => {
-  const location = useLocation();
-  const navigate = useNavigate();
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const { user } = useAuth();
+  const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        setLoading(true);
-        // Get product IDs from URL search params
-        const searchParams = new URLSearchParams(location.search);
-        const productIds = searchParams.getAll('product');
-        
-        if (productIds.length === 0) {
-          // If no products specified, fetch some random products
-          const response = await productService.getProducts({
-            limit: 12
-          });
-          setProducts(response.data.products || []);
-        } else {
-          // Fetch specific products
-          const productPromises = productIds.map(id => productService.getProductById(id));
-          const productResponses = await Promise.all(productPromises);
-          setProducts(productResponses.map(response => response.data));
-        }
-        
-        setLoading(false);
-      } catch (err) {
-        setError('Failed to load products');
-        setLoading(false);
-      }
-    };
+    fetchComparisonProducts();
+  }, []);
 
-    fetchProducts();
-  }, [location.search]);
+  const fetchComparisonProducts = async () => {
+    try {
+      setLoading(true);
+      const response = await api.get('/compare');
+      setProducts(response.data.data);
+    } catch (error) {
+      toast.error('Failed to fetch comparison products');
+      console.error('Error fetching comparison products:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const removeFromComparison = async (productId) => {
+    try {
+      await api.delete(`/compare/remove/${productId}`);
+      setProducts(products.filter(product => product._id !== productId));
+      toast.success('Product removed from comparison');
+    } catch (error) {
+      toast.error('Failed to remove product from comparison');
+      console.error('Error removing product from comparison:', error);
+    }
+  };
+
+  const clearComparison = async () => {
+    try {
+      await api.delete('/compare/clear');
+      setProducts([]);
+      toast.success('Comparison cleared');
+    } catch (error) {
+      toast.error('Failed to clear comparison');
+      console.error('Error clearing comparison:', error);
+    }
+  };
 
   if (loading) {
     return (
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="flex justify-center items-center h-64">
-          <Loader />
-        </div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="text-center">
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">Error loading products</h2>
-          <p className="text-gray-600 mb-6">{error}</p>
-          <button 
-            onClick={() => navigate('/products')}
-            className="text-indigo-600 hover:text-indigo-500 font-medium"
-          >
-            Browse all products
-          </button>
-        </div>
+      <div className="flex justify-center items-center h-64">
+        <Loader />
       </div>
     );
   }
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <div className="mb-8">
+    <div className="container mx-auto px-4 py-8">
+      <div className="flex justify-between items-center mb-8">
         <h1 className="text-3xl font-bold text-gray-900">Product Comparison</h1>
-        <p className="mt-2 text-gray-600">
-          Compare features, prices, and ratings of similar products side-by-side.
-        </p>
+        {products.length > 0 && (
+          <button
+            onClick={clearComparison}
+            className="px-4 py-2 text-sm font-medium text-red-700 bg-red-100 rounded-md hover:bg-red-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+          >
+            Clear All
+          </button>
+        )}
       </div>
-      
-      <ProductComparison products={products} />
-      
-      <div className="mt-8 text-center">
-        <button 
-          onClick={() => navigate('/products')}
-          className="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
-        >
-          Browse More Products
-        </button>
-      </div>
+
+      {products.length === 0 ? (
+        <div className="text-center py-12">
+          <div className="text-5xl mb-4">🔍</div>
+          <h2 className="text-xl font-medium text-gray-900 mb-2">No products to compare</h2>
+          <p className="text-gray-500 mb-6">Add products to compare them side by side</p>
+          <button
+            onClick={() => navigate('/products')}
+            className="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+          >
+            Browse Products
+          </button>
+        </div>
+      ) : (
+        <div>
+          <div className="mb-6">
+            <p className="text-gray-600">
+              Comparing {products.length} product{products.length !== 1 ? 's' : ''}
+            </p>
+          </div>
+          
+          <ProductComparisonTable 
+            products={products} 
+            onRemove={removeFromComparison}
+          />
+        </div>
+      )}
     </div>
   );
 };

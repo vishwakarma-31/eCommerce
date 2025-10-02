@@ -6,6 +6,18 @@
 import { toast } from 'react-toastify';
 
 /**
+ * Detect network errors
+ * @param {Object} error - The error object
+ * @returns {boolean} True if the error is a network error
+ */
+export const isNetworkError = (error) => {
+  return !error.response && 
+         (error.code === 'NETWORK_ERROR' || 
+          error.message === 'Network Error' ||
+          error.name === 'NetworkError');
+};
+
+/**
  * Handle API errors and display user-friendly messages
  * @param {Object} error - The error object from API calls
  * @param {string} defaultMessage - Default message to show if no specific error message is available
@@ -15,14 +27,21 @@ export const handleApiError = (error, defaultMessage = 'An error occurred. Pleas
   let errorMessage = defaultMessage;
   
   // Handle network errors
-  if (!error.response) {
+  if (isNetworkError(error)) {
     errorMessage = 'Network error. Please check your connection and try again.';
     toast.error(errorMessage);
     return errorMessage;
   }
   
+  // Handle timeout errors
+  if (error.code === 'ECONNABORTED' || error.message?.includes('timeout')) {
+    errorMessage = 'Request timeout. Please try again.';
+    toast.error(errorMessage);
+    return errorMessage;
+  }
+  
   // Handle HTTP errors
-  const { status, data } = error.response;
+  const { status, data } = error.response || {};
   
   switch (status) {
     case 400:
@@ -48,6 +67,11 @@ export const handleApiError = (error, defaultMessage = 'An error occurred. Pleas
       break;
     case 500:
       errorMessage = data?.error || data?.message || 'Internal server error. Please try again later.';
+      break;
+    case 502:
+    case 503:
+    case 504:
+      errorMessage = 'Service temporarily unavailable. Please try again later.';
       break;
     default:
       errorMessage = data?.error || data?.message || defaultMessage;
@@ -144,6 +168,7 @@ export const retryApiCall = async (apiCall, maxRetries = 3, delay = 1000) => {
 };
 
 export default {
+  isNetworkError,
   handleApiError,
   handleValidationError,
   showSuccessMessage,

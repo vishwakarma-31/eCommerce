@@ -56,8 +56,8 @@ const preOrderSchema = new mongoose.Schema({
 });
 
 // Critical Indexes for Performance
-preOrderSchema.index({ backer: 1 });
-preOrderSchema.index({ productConcept: 1 });
-preOrderSchema.index({ status: 1 });
+preOrderSchema.index({ backer: 1 }); // Index for querying pre-orders by backer
+preOrderSchema.index({ productConcept: 1 }); // Index for querying pre-orders by product
+preOrderSchema.index({ status: 1 }); // Index for status-based queries
 
 module.exports = mongoose.model('PreOrder', preOrderSchema);

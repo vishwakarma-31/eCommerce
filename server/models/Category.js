@@ -15,6 +15,10 @@ const categorySchema = new mongoose.Schema({
     type: String,
     unique: true,
     lowercase: true
+  },
+  isActive: {
+    type: Boolean,
+    default: true
   }
 }, {
   timestamps: true
@@ -29,7 +33,8 @@ categorySchema.pre('save', function(next) {
 });
 
 // Add indexes
-categorySchema.index({ name: 1 });
-categorySchema.index({ slug: 1 });
+categorySchema.index({ name: 1 }); // Index for querying by name
+categorySchema.index({ slug: 1 }); // Index for querying by slug
+categorySchema.index({ isActive: 1 }); // Index for active categories
 
 module.exports = mongoose.model('Category', categorySchema);

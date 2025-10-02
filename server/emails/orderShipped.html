@@ -33,7 +33,7 @@
         .content {
             margin-bottom: 30px;
         }
-        .shipping-details {
+        .tracking {
             background-color: #f0fdf4;
             padding: 15px;
             border-radius: 6px;
@@ -62,7 +62,7 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>Your Order Is On Its Way!</h1>
+            <h1>Your Order Has Been Shipped!</h1>
         </div>
         
         <div class="content">
@@ -70,15 +70,15 @@
             
             <p>Great news! Your order #{{orderId}} has been shipped and is on its way to you.</p>
             
-            <div class="shipping-details">
+            <div class="tracking">
                 <p><strong>Tracking Number:</strong> {{trackingNumber}}</p>
                 <p><strong>Estimated Delivery:</strong> {{estimatedDelivery}}</p>
             </div>
             
-            <p>You can track your shipment using the tracking number above. Delivery times may vary based on your location and shipping method.</p>
+            <p>You can track your package using the tracking number above with the carrier's website.</p>
             
             <div style="text-align: center;">
-                <a href="{{orderUrl}}" class="button">Track Your Order</a>
+                <a href="{{orderUrl}}" class="button">View Order Details</a>
             </div>
             
             <p>If you have any questions about your shipment, please contact our customer support team.</p>

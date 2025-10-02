@@ -1,5 +1,126 @@
-const ProductConcept = require('../models/Product');
-const { protect, isCreator, isAdmin } = require('../middleware/auth');
+const ProductConcept = require('../models/ProductConcept');
+const asyncHandler = require('../middleware/asyncHandler');
+const ErrorResponse = require('../utils/ErrorResponse');
+
+// @desc    Get all products
+// @route   GET /api/products
+// @access  Public
+exports.getProducts = asyncHandler(async (req, res, next) => {
+  const { category, status, minPrice, maxPrice, sort, page = 1, limit = 12 } = req.query;
+  
+  let query = {};
+  
+  // Build query
+  if (category) query.category = category;
+  if (status) query.status = status;
+  if (minPrice || maxPrice) {
+    query.price = {};
+    if (minPrice) query.price.$gte = minPrice;
+    if (maxPrice) query.price.$lte = maxPrice;
+  }
+  
+  // Execute query with pagination
+  const skip = (page - 1) * limit;
+  const products = await ProductConcept.find(query)
+    .populate('creator', 'name profileImage')
+    .sort(sort || '-createdAt')
+    .skip(skip)
+    .limit(parseInt(limit));
+  
+  const total = await ProductConcept.countDocuments(query);
+  
+  res.status(200).json({
+    success: true,
+    count: products.length,
+    total,
+    page: parseInt(page),
+    pages: Math.ceil(total / limit),
+    data: products
+  });
+});
+
+// @desc    Create new product
+// @route   POST /api/products
+// @access  Private (Creator only)
+exports.createProduct = asyncHandler(async (req, res, next) => {
+  // Add creator from logged-in user
+  req.body.creator = req.user.id;
+  
+  // Generate slug from title
+  req.body.slug = req.body.title.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+  
+  const product = await ProductConcept.create(req.body);
+  
+  res.status(201).json({
+    success: true,
+    data: product
+  });
+});
+
+// @desc    Get single product
+// @route   GET /api/products/:id
+// @access  Public
+exports.getProduct = asyncHandler(async (req, res, next) => {
+  const product = await ProductConcept.findById(req.params.id).populate('creator', 'name profileImage');
+  
+  if (!product) {
+    return next(new ErrorResponse(`Product not found with id of ${req.params.id}`, 404));
+  }
+  
+  res.status(200).json({
+    success: true,
+    data: product
+  });
+});
+
+// @desc    Update product
+// @route   PUT /api/products/:id
+// @access  Private (Creator/Admin only)
+exports.updateProduct = asyncHandler(async (req, res, next) => {
+  let product = await ProductConcept.findById(req.params.id);
+  
+  if (!product) {
+    return next(new ErrorResponse(`Product not found with id of ${req.params.id}`, 404));
+  }
+  
+  // Check if user is the creator or admin
+  if (product.creator.toString() !== req.user.id && req.user.role !== 'Admin') {
+    return next(new ErrorResponse(`Not authorized to update this product`, 401));
+  }
+  
+  product = await ProductConcept.findByIdAndUpdate(req.params.id, req.body, {
+    new: true,
+    runValidators: true
+  });
+  
+  res.status(200).json({
+    success: true,
+    data: product
+  });
+});
+
+// @desc    Delete product
+// @route   DELETE /api/products/:id
+// @access  Private (Creator/Admin only)
+exports.deleteProduct = asyncHandler(async (req, res, next) => {
+  const product = await ProductConcept.findById(req.params.id);
+  
+  if (!product) {
+    return next(new ErrorResponse(`Product not found with id of ${req.params.id}`, 404));
+  }
+  
+  // Check if user is the creator or admin
+  if (product.creator.toString() !== req.user.id && req.user.role !== 'Admin') {
+    return next(new ErrorResponse(`Not authorized to delete this product`, 401));
+  }
+  
+  await product.remove();
+  
+  res.status(200).json({
+    success: true,
+    data: {}
+  });
+});
 
 /**
  * Get all products with comprehensive filtering and sorting
@@ -10,6 +131,15 @@ const { protect, isCreator, isAdmin } = require('../middleware/auth');
  */
 const getAllProducts = async (req, res) => {
   try {
+    // Create cache key based on query parameters
+    const cacheKey = `products:${JSON.stringify(req.query)}`;
+    
+    // Try to get from cache first
+    let cachedResult = cacheService.get(cacheKey);
+    if (cachedResult) {
+      return res.status(200).json(cachedResult);
+    }
+
     // Parse query parameters
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 12;
@@ -90,7 +220,7 @@ const getAllProducts = async (req, res) => {
     const products = await productQuery;
     const total = await ProductConcept.countDocuments(filter);
     
-    res.status(200).json({
+    const result = {
       products,
       pagination: {
         page,
@@ -98,7 +228,12 @@ const getAllProducts = async (req, res) => {
         total,
         pages: Math.ceil(total / limit)
       }
-    });
+    };
+    
+    // Cache result for 5 minutes
+    cacheService.set(cacheKey, result, 5 * 60 * 1000);
+    
+    res.status(200).json(result);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

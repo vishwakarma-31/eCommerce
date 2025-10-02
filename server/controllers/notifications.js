@@ -1,6 +1,6 @@
 const Notification = require('../models/Notification');
 const User = require('../models/User');
-const Product = require('../models/Product');
+const Product = require('../models/ProductConcept');
 const Order = require('../models/Order');
 const asyncHandler = require('../middleware/asyncHandler');
 const ErrorResponse = require('../utils/ErrorResponse');

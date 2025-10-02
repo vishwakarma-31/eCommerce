@@ -1,5 +1,5 @@
 const Comment = require('../models/Comment');
-const ProductConcept = require('../models/Product');
+const ProductConcept = require('../models/ProductConcept');
 const User = require('../models/User');
 const { protect, isBacker } = require('../middleware/auth');
 const { sendNewCommentEmail } = require('../services/emailService');
