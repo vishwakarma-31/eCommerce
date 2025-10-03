@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
-import productService from '../services/productService';
+import { productService } from '../services/productService';
 import Loader from '../components/common/Loader';
 import Button from '../components/common/Button';
 import ProgressBar from '../components/product/ProgressBar';

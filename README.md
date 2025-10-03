@@ -49,6 +49,29 @@ Creators pitch innovative product ideas, and customers "back" them through pre-o
 - **Jest** for testing
 - **Postman** for API testing
 
+## Deployment
+
+See [DEPLOYMENT.md](DEPLOYMENT.md) for detailed deployment instructions.
+
+### Quick Deployment Guide
+
+#### Frontend (Client) Deployment
+1. The client can be deployed to Vercel, Netlify, or any static hosting service
+2. Build command: `npm run build`
+3. Output directory: `dist`
+4. Environment variables:
+   - `VITE_API_URL` - URL of your deployed backend
+   - `VITE_STRIPE_PUBLISHABLE_KEY` - Your Stripe publishable key
+
+#### Backend (Server) Deployment
+1. The server can be deployed to Render, Heroku, or any Node.js hosting service
+2. Start command: `npm start`
+3. Required environment variables:
+   - `MONGO_URI` - MongoDB connection string
+   - `JWT_SECRET` - JWT secret key
+   - `STRIPE_SECRET_KEY` - Stripe secret key
+   - And other variables as defined in [DEPLOYMENT.md](DEPLOYMENT.md)
+
 ## User Roles & Permissions
 
 ### Guest (Unauthenticated)
@@ -415,17 +438,17 @@ npm run test:watch    # Run tests in watch mode
 npm run test:coverage # Run tests with coverage report
 ```
 
-## Deployment
+## Health Checks
 
-### Production Deployment
-1. Update environment variables in both client and server
-2. Build frontend: `cd client && npm run build`
-3. Start server: `cd server && npm start`
-4. Use PM2 for process management: `npm run start:prod`
+### Backend
+```
+/health
+```
 
-### Health Checks
-- Backend: `/health` endpoint
-- Frontend: `/health.html` file
+### Frontend
+```
+/health.html
+```
 
 ## Known Issues and Limitations
 

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import ProductGrid from '../components/product/ProductGrid';
 import Loader from '../components/common/Loader';
-import productService from '../services/productService';
+import { productService } from '../services/productService';
 import CreatorSpotlight from '../components/product/CreatorSpotlight';
 
 const HomePage = () => {

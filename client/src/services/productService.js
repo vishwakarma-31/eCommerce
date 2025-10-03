@@ -10,5 +10,12 @@ export const productService = {
     headers: { 'Content-Type': 'multipart/form-data' }
   }),
   searchProducts: (query) => API.get('/products/search', { params: { q: query } }),
-  likeProduct: (id) => API.post(`/products/${id}/like`)
+  likeProduct: (id) => API.post(`/products/${id}/like`),
+  
+  // Additional methods for homepage
+  getFeaturedProducts: (params) => API.get('/products/featured', { params }),
+  getTrendingProducts: (params) => API.get('/products/trending', { params }),
+  
+  // Additional method for products page
+  getProducts: (params) => API.get('/products', { params })
 };

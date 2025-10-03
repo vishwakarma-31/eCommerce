@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import productService from '../services/productService';
+import { productService } from '../services/productService';
 import ProductGrid from '../components/product/ProductGrid';
 import ProductFilter from '../components/product/ProductFilter';
 import ProductSort from '../components/product/ProductSort';
