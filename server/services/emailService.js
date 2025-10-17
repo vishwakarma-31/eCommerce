@@ -310,6 +310,68 @@ const sendProjectUpdateEmail = async (project, backers, updateTitle, updateConte
   }
 };
 
+/**
+ * Send abandoned cart email
+ * @param {Object} user - User object
+ * @param {Array} cartItems - Array of cart items
+ * @param {Number} totalPrice - Total price of cart
+ */
+const sendAbandonedCartEmail = async (user, cartItems, totalPrice) => {
+  await sendEmail({
+    to: user.email,
+    subject: 'Complete Your Purchase - Items Still in Your Cart',
+    template: 'abandonedCart',
+    data: {
+      name: user.name,
+      cartItems: cartItems.map(item => ({
+        name: item.product.title,
+        price: item.price,
+        quantity: item.quantity
+      })),
+      totalPrice: totalPrice,
+      cartUrl: `${process.env.CLIENT_URL || 'http://localhost:5173'}/cart`
+    }
+  });
+};
+
+/**
+ * Send low stock alert to admin
+ * @param {Object} admin - Admin user object
+ * @param {Array} lowStockProducts - Array of low stock products
+ */
+const sendLowStockAlert = async (admin, lowStockProducts) => {
+  await sendEmail({
+    to: admin.email,
+    subject: 'Low Stock Alert - Action Required',
+    template: 'lowStockAlert',
+    data: {
+      adminName: admin.name,
+      lowStockProducts: lowStockProducts,
+      adminDashboardUrl: `${process.env.CLIENT_URL || 'http://localhost:5173'}/admin/products`
+    }
+  });
+};
+
+/**
+ * Send weekly newsletter to subscriber
+ * @param {Object} user - User object
+ * @param {Object} newsletterData - Newsletter data including featured products, stats, etc.
+ */
+const sendWeeklyNewsletter = async (user, newsletterData) => {
+  await sendEmail({
+    to: user.email,
+    subject: 'Weekly Newsletter - New Products & Innovations',
+    template: 'weeklyNewsletter',
+    data: {
+      name: user.name,
+      ...newsletterData,
+      shopUrl: process.env.CLIENT_URL || 'http://localhost:5173',
+      unsubscribeUrl: `${process.env.CLIENT_URL || 'http://localhost:5173'}/unsubscribe`,
+      preferencesUrl: `${process.env.CLIENT_URL || 'http://localhost:5173'}/preferences`
+    }
+  });
+};
+
 module.exports = {
   sendEmail,
   sendWelcomeEmail,
@@ -320,5 +382,8 @@ module.exports = {
   sendOrderDeliveredEmail,
   sendPasswordResetEmail,
   sendNewCommentEmail,
-  sendProjectUpdateEmail
+  sendProjectUpdateEmail,
+  sendAbandonedCartEmail,
+  sendLowStockAlert,
+  sendWeeklyNewsletter
 };

@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Newsletter Subscription Confirmed</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #8b5cf6;
+            padding-bottom: 20px;
+        }
+        .header h1 {
+            color: #8b5cf6;
+            margin: 0;
+        }
+        .content {
+            margin-bottom: 30px;
+        }
+        .button {
+            display: inline-block;
+            background-color: #8b5cf6;
+            color: white;
+            padding: 12px 24px;
+            text-decoration: none;
+            border-radius: 4px;
+            font-weight: bold;
+            margin: 20px 0;
+        }
+        .footer {
+            text-align: center;
+            font-size: 0.9em;
+            color: #666;
+            border-top: 1px solid #eee;
+            padding-top: 20px;
+        }
+        .preferences {
+            background-color: #f0f9ff;
+            padding: 15px;
+            border-radius: 6px;
+            margin: 20px 0;
+            border-left: 4px solid #0ea5e9;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Newsletter Subscription Confirmed!</h1>
+        </div>
+        
+        <div class="content">
+            <p>Hi {{name}},</p>
+            
+            <p>Thank you for subscribing to the LaunchPad Market newsletter! You're now part of our community of innovators and creators.</p>
+            
+            <p>As a subscriber, you'll receive:</p>
+            <ul>
+                <li>Updates on the latest innovative projects</li>
+                <li>Exclusive early access to new products</li>
+                <li>Creator spotlights and behind-the-scenes stories</li>
+                <li>Special discounts and promotions</li>
+                <li>Industry insights and trend reports</li>
+            </ul>
+            
+            <div class="preferences">
+                <p><strong>Manage Your Preferences:</strong></p>
+                <p>You can update your email preferences or unsubscribe at any time by clicking the link at the bottom of any newsletter.</p>
+            </div>
+            
+            <p>In the meantime, explore our latest projects and discover something amazing!</p>
+            
+            <div style="text-align: center;">
+                <a href="{{clientUrl}}" class="button">Explore Projects</a>
+            </div>
+            
+            <p>Thank you for joining us on this journey of innovation!</p>
+            
+            <p>Best regards,<br>
+            The LaunchPad Market Team</p>
+        </div>
+        
+        <div class="footer">
+            <p>You're receiving this email because you subscribed to LaunchPad Market newsletters.</p>
+            <p>&copy; 2025 LaunchPad Market. All rights reserved.</p>
+        </div>
+    </div>
+</body>
+</html>

@@ -8,21 +8,28 @@
     "build": "vite build",
     "build:cdn": "NODE_ENV=production vite build",
     "build:prod": "VITE_APP_BASE_URL=https://your-cdn-url.com/ vite build",
+    "analyze": "node scripts/analyze-bundle.js",
+    "analyze:build": "npm run build && npm run analyze",
+    "perf:monitor": "node scripts/lighthouse-monitor.js",
     "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
-    "test": "jest",
-    "test:watch": "jest --watch",
-    "test:coverage": "jest --coverage",
+    "test": "vitest",
+    "test:watch": "vitest --watch",
+    "test:coverage": "vitest --coverage",
     "test:deployment": "node test-deployment.cjs"
   },
   "dependencies": {
     "@tailwindcss/postcss": "^4.1.13",
     "axios": "^1.12.2",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0",
+    "react-dom": "^1.2.0",
     "react-hook-form": "^7.63.0",
     "react-router-dom": "^7.9.3",
-    "react-toastify": "^11.0.5"
+    "react-helmet-async": "^2.2.0",
+    "react-toastify": "^11.0.5",
+    "recharts": "^2.15.1",
+    "socket.io-client": "^4.8.0",
+    "web-vitals": "^4.2.4"
   },
   "devDependencies": {
     "@babel/preset-env": "^7.28.3",
@@ -40,9 +47,11 @@
     "eslint-plugin-react-refresh": "^0.4.5",
     "jest": "^29.7.0",
     "jest-environment-jsdom": "^29.7.0",
+    "lighthouse": "^12.2.2",
     "postcss": "^8.5.6",
     "rollup-plugin-visualizer": "^6.0.3",
     "tailwindcss": "^4.1.13",
-    "vite": "^5.0.8"
+    "vite": "^5.0.8",
+    "vitest": "^2.1.8"
   }
 }

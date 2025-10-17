@@ -1,150 +1,195 @@
-import React, { Suspense } from 'react';
+import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { HelmetProvider } from 'react-helmet-async';
 import { AuthProvider } from './context/AuthContext';
 import { CartProvider } from './context/CartContext';
 import { WishlistProvider } from './context/WishlistContext';
-import { SearchProvider } from './context/SearchContext';
+import { NotificationProvider } from './context/NotificationContext';
+import { ComparisonProvider } from './context/ComparisonContext';
+import { RecentlyViewedProvider } from './context/RecentlyViewedContext';
+import { PWAProvider } from './context/PWAContext';
 import Navbar from './components/common/Navbar';
 import Footer from './components/common/Footer';
-import Loader from './components/common/Loader';
-import ErrorBoundary from './components/common/ErrorBoundary';
-
-// Lazy load pages for code splitting
-const HomePage = React.lazy(() => import('./pages/HomePage'));
-const ProductDetailPage = React.lazy(() => import('./pages/ProductDetailPage'));
-const ProductsPage = React.lazy(() => import('./pages/ProductsPage'));
-const ProductComparisonPage = React.lazy(() => import('./pages/ProductComparisonPage'));
-const LoginPage = React.lazy(() => import('./pages/LoginPage'));
-const RegisterPage = React.lazy(() => import('./pages/RegisterPage'));
-const ForgotPasswordPage = React.lazy(() => import('./pages/ForgotPasswordPage'));
-const ResetPasswordPage = React.lazy(() => import('./pages/ResetPasswordPage'));
-const ProfilePage = React.lazy(() => import('./pages/ProfilePage'));
-const WishlistPage = React.lazy(() => import('./pages/WishlistPage'));
-const CartPage = React.lazy(() => import('./pages/CartPage'));
-const CheckoutPage = React.lazy(() => import('./pages/CheckoutPage'));
-const OrdersPage = React.lazy(() => import('./pages/OrdersPage'));
-const OrderDetailPage = React.lazy(() => import('./pages/OrderDetailPage'));
-const CreatorDashboard = React.lazy(() => import('./pages/CreatorDashboard'));
-const CreateProductPage = React.lazy(() => import('./pages/CreateProductPage'));
-const AdminDashboard = React.lazy(() => import('./pages/AdminDashboard'));
-const LegalDocumentsPage = React.lazy(() => import('./pages/LegalDocumentsPage'));
-const NotFoundPage = React.lazy(() => import('./pages/NotFoundPage'));
-
-// Route components (not lazy loaded as they're needed for routing)
-import PrivateRoute from './routes/PrivateRoute';
-import CreatorRoute from './routes/CreatorRoute';
-import AdminRoute from './routes/AdminRoute';
+import BottomNavigation from './components/common/BottomNavigation';
+import MobileMenu from './components/common/MobileMenu';
+import Toast from './components/common/Toast';
+import HomePage from './pages/HomePage';
+import ProductsPage from './pages/ProductsPage';
+import ProductDetailPage from './pages/ProductDetailPage';
+import CartPage from './pages/CartPage';
+import CheckoutPage from './pages/CheckoutPage';
+import MultiStepCheckout from './components/checkout/MultiStepCheckout';
+import ProfilePage from './pages/ProfilePage';
+import LoginPage from './pages/LoginPage';
+import RegisterPage from './pages/RegisterPage';
+import CreatorDashboard from './pages/CreatorDashboard';
+import AdminDashboard from './pages/admin/AdminDashboard';
+import AdminUsersManagement from './pages/admin/AdminUsersManagement';
+import AdminUserDetails from './pages/admin/AdminUserDetails';
+import AdminProductManagement from './pages/admin/AdminProductManagement';
+import AdminOrderManagement from './pages/admin/AdminOrderManagement';
+import AdminCategoryManagement from './pages/admin/AdminCategoryManagement';
+import AdminCouponManagement from './pages/admin/AdminCouponManagement';
+import AdminContentManagement from './pages/admin/AdminContentManagement';
+import AdminReports from './pages/admin/AdminReports';
+import AdminSiteSettings from './pages/admin/AdminSiteSettings';
+import OrderHistoryPage from './pages/OrderHistoryPage';
+import OrderDetailPage from './pages/OrderDetailPage';
+import WishlistPage from './pages/WishlistPage';
+import RecentlyViewedPage from './pages/RecentlyViewedPage';
+import NotificationsPage from './pages/NotificationsPage';
+import SearchResultsPage from './pages/SearchResultsPage';
+import ProductComparisonPage from './pages/ProductComparisonPage';
+import FAQPage from './pages/FAQPage';
+import AboutPage from './pages/AboutPage';
+import TermsPage from './pages/TermsPage';
+import PrivacyPage from './pages/PrivacyPage';
+import NotFoundPage from './pages/NotFoundPage';
+import ProtectedRoute from './components/common/ProtectedRoute';
+import AdminRoute from './components/common/AdminRoute';
+import CreatorRoute from './components/common/CreatorRoute';
+import './App.css';
 
 function App() {
   return (
-    <AuthProvider>
-      <CartProvider>
-        <WishlistProvider>
-          <SearchProvider>
-            <Router>
-              <div className="flex flex-col min-h-screen">
-                <Navbar />
-                <main className="flex-grow">
-                  <ErrorBoundary>
-                    <Suspense fallback={<div className="flex justify-center items-center h-64"><Loader /></div>}>
-                      <Routes>
-                        {/* Public routes */}
-                        <Route path="/" element={<HomePage />} />
-                        <Route path="/product/:id" element={<ProductDetailPage />} />
-                        <Route path="/products" element={<ProductsPage />} />
-                        <Route path="/compare" element={<ProductComparisonPage />} />
-                        <Route path="/login" element={<LoginPage />} />
-                        <Route path="/register" element={<RegisterPage />} />
-                        <Route path="/forgot-password" element={<ForgotPasswordPage />} />
-                        <Route path="/reset-password" element={<ResetPasswordPage />} />
-                        <Route path="/legal" element={<LegalDocumentsPage />} />
-                        
-                        {/* Legal routes */}
-                        <Route path="/terms-of-service" element={<iframe src="/terms-of-service.html" title="Terms of Service" className="w-full h-screen" />} />
-                        <Route path="/privacy-policy" element={<iframe src="/privacy-policy.html" title="Privacy Policy" className="w-full h-screen" />} />
-                        <Route path="/refund-policy" element={<iframe src="/refund-policy.html" title="Refund Policy" className="w-full h-screen" />} />
-                        <Route path="/creator-agreement" element={<iframe src="/creator-agreement.html" title="Creator Agreement" className="w-full h-screen" />} />
-                        <Route path="/backer-agreement" element={<iframe src="/backer-agreement.html" title="Backer Agreement" className="w-full h-screen" />} />
-                        <Route path="/cookie-policy" element={<iframe src="/cookie-policy.html" title="Cookie Policy" className="w-full h-screen" />} />
-                        <Route path="/gdpr-compliance" element={<iframe src="/gdpr-compliance.html" title="GDPR Compliance" className="w-full h-screen" />} />
-                        
-                        {/* Private routes */}
-                        <Route path="/profile" element={
-                          <PrivateRoute>
-                            <ProfilePage />
-                          </PrivateRoute>
-                        } />
-                        <Route path="/wishlist" element={
-                          <PrivateRoute>
-                            <WishlistPage />
-                          </PrivateRoute>
-                        } />
-                        <Route path="/cart" element={
-                          <PrivateRoute>
-                            <CartPage />
-                          </PrivateRoute>
-                        } />
-                        <Route path="/checkout" element={
-                          <PrivateRoute>
-                            <CheckoutPage />
-                          </PrivateRoute>
-                        } />
-                        <Route path="/orders" element={
-                          <PrivateRoute>
-                            <OrdersPage />
-                          </PrivateRoute>
-                        } />
-                        <Route path="/order/:id" element={
-                          <PrivateRoute>
-                            <OrderDetailPage />
-                          </PrivateRoute>
-                        } />
-                        
-                        {/* Creator routes */}
-                        <Route path="/creator/dashboard" element={
-                          <CreatorRoute>
-                            <CreatorDashboard />
-                          </CreatorRoute>
-                        } />
-                        <Route path="/creator/products/new" element={
-                          <CreatorRoute>
-                            <CreateProductPage />
-                          </CreatorRoute>
-                        } />
-                        
-                        {/* Admin routes */}
-                        <Route path="/admin/dashboard" element={
-                          <AdminRoute>
-                            <AdminDashboard />
-                          </AdminRoute>
-                        } />
-                        
-                        {/* 404 route */}
-                        <Route path="*" element={<NotFoundPage />} />
-                      </Routes>
-                    </Suspense>
-                  </ErrorBoundary>
-                </main>
-                <Footer />
-                <ToastContainer 
-                  position="top-right"
-                  autoClose={5000}
-                  hideProgressBar={false}
-                  newestOnTop={false}
-                  closeOnClick
-                  rtl={false}
-                  pauseOnFocusLoss
-                  draggable
-                  pauseOnHover
-                />
-              </div>
-            </Router>
-          </SearchProvider>
-        </WishlistProvider>
-      </CartProvider>
-    </AuthProvider>
+    <HelmetProvider>
+      <AuthProvider>
+        <CartProvider>
+          <WishlistProvider>
+            <NotificationProvider>
+              <ComparisonProvider>
+                <RecentlyViewedProvider>
+                  <PWAProvider>
+                    <Router>
+                      <div className="flex flex-col min-h-screen">
+                        <Navbar />
+                        <MobileMenu />
+                        <main className="flex-grow">
+                          <Routes>
+                            {/* Public routes */}
+                            <Route path="/" element={<HomePage />} />
+                            <Route path="/products" element={<ProductsPage />} />
+                            <Route path="/product/:id" element={<ProductDetailPage />} />
+                            <Route path="/cart" element={<CartPage />} />
+                            <Route path="/checkout" element={<CheckoutPage />} />
+                            <Route path="/checkout/steps" element={<MultiStepCheckout />} />
+                            <Route path="/login" element={<LoginPage />} />
+                            <Route path="/register" element={<RegisterPage />} />
+                            <Route path="/search" element={<SearchResultsPage />} />
+                            <Route path="/compare" element={<ProductComparisonPage />} />
+                            <Route path="/faq" element={<FAQPage />} />
+                            <Route path="/about" element={<AboutPage />} />
+                            <Route path="/terms" element={<TermsPage />} />
+                            <Route path="/privacy" element={<PrivacyPage />} />
+                            
+                            {/* Protected routes */}
+                            <Route path="/profile" element={
+                              <ProtectedRoute>
+                                <ProfilePage />
+                              </ProtectedRoute>
+                            } />
+                            <Route path="/profile/orders" element={
+                              <ProtectedRoute>
+                                <OrderHistoryPage />
+                              </ProtectedRoute>
+                            } />
+                            <Route path="/profile/orders/:id" element={
+                              <ProtectedRoute>
+                                <OrderDetailPage />
+                              </ProtectedRoute>
+                            } />
+                            <Route path="/wishlist" element={
+                              <ProtectedRoute>
+                                <WishlistPage />
+                              </ProtectedRoute>
+                            } />
+                            <Route path="/recently-viewed" element={
+                              <ProtectedRoute>
+                                <RecentlyViewedPage />
+                              </ProtectedRoute>
+                            } />
+                            <Route path="/notifications" element={
+                              <ProtectedRoute>
+                                <NotificationsPage />
+                              </ProtectedRoute>
+                            } />
+                            
+                            {/* Creator routes */}
+                            <Route path="/creator/dashboard" element={
+                              <CreatorRoute>
+                                <CreatorDashboard />
+                              </CreatorRoute>
+                            } />
+                            
+                            {/* Admin routes */}
+                            <Route path="/admin/dashboard" element={
+                              <AdminRoute>
+                                <AdminDashboard />
+                              </AdminRoute>
+                            } />
+                            <Route path="/admin/users" element={
+                              <AdminRoute>
+                                <AdminUsersManagement />
+                              </AdminRoute>
+                            } />
+                            <Route path="/admin/users/:id" element={
+                              <AdminRoute>
+                                <AdminUserDetails />
+                              </AdminRoute>
+                            } />
+                            <Route path="/admin/products" element={
+                              <AdminRoute>
+                                <AdminProductManagement />
+                              </AdminRoute>
+                            } />
+                            <Route path="/admin/orders" element={
+                              <AdminRoute>
+                                <AdminOrderManagement />
+                              </AdminRoute>
+                            } />
+                            <Route path="/admin/categories" element={
+                              <AdminRoute>
+                                <AdminCategoryManagement />
+                              </AdminRoute>
+                            } />
+                            <Route path="/admin/coupons" element={
+                              <AdminRoute>
+                                <AdminCouponManagement />
+                              </AdminRoute>
+                            } />
+                            <Route path="/admin/content" element={
+                              <AdminRoute>
+                                <AdminContentManagement />
+                              </AdminRoute>
+                            } />
+                            <Route path="/admin/reports" element={
+                              <AdminRoute>
+                                <AdminReports />
+                              </AdminRoute>
+                            } />
+                            <Route path="/admin/settings" element={
+                              <AdminRoute>
+                                <AdminSiteSettings />
+                              </AdminRoute>
+                            } />
+                            
+                            {/* 404 route */}
+                            <Route path="*" element={<NotFoundPage />} />
+                          </Routes>
+                        </main>
+                        <Footer />
+                        <BottomNavigation />
+                        <Toast />
+                      </div>
+                    </Router>
+                  </PWAProvider>
+                </RecentlyViewedProvider>
+              </ComparisonProvider>
+            </NotificationProvider>
+          </WishlistProvider>
+        </CartProvider>
+      </AuthProvider>
+    </HelmetProvider>
   );
 }
 

@@ -1,4 +1,6 @@
 import React, { createContext, useState, useEffect, useContext } from 'react';
+import { useAuth } from './AuthContext';
+import api from '../services/api';
 
 // Create the context
 const CartContext = createContext();
@@ -14,81 +16,161 @@ export const useCart = () => {
 
 // CartProvider component
 export const CartProvider = ({ children }) => {
-  const [cartItems, setCartItems] = useState([]);
+  const [cart, setCart] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const { user, isAuthenticated } = useAuth();
 
-  // Load cart from localStorage on initial render
-  useEffect(() => {
-    const savedCart = localStorage.getItem('cart');
-    if (savedCart) {
-      try {
-        setCartItems(JSON.parse(savedCart));
-      } catch (error) {
-        console.error('Error parsing cart from localStorage:', error);
-        localStorage.removeItem('cart');
-      }
+  // Fetch cart from backend
+  const fetchCart = async () => {
+    if (!isAuthenticated) return;
+    
+    try {
+      setLoading(true);
+      const response = await api.get('/cart');
+      setCart(response.data);
+      setError(null);
+    } catch (err) {
+      setError(err.response?.data?.message || err.message);
+      console.error('Error fetching cart:', err);
+    } finally {
+      setLoading(false);
     }
-  }, []);
+  };
 
-  // Save cart to localStorage whenever it changes
+  // Load cart on initial render and when user changes
   useEffect(() => {
-    localStorage.setItem('cart', JSON.stringify(cartItems));
-  }, [cartItems]);
+    fetchCart();
+  }, [user, isAuthenticated]);
 
-  const addToCart = (product, quantity = 1) => {
-    setCartItems(prevItems => {
-      const existingItem = prevItems.find(item => item.product._id === product._id);
-      
-      if (existingItem) {
-        return prevItems.map(item =>
-          item.product._id === product._id
-            ? { ...item, quantity: item.quantity + quantity }
-            : item
-        );
-      } else {
-        return [...prevItems, { product, quantity, _id: product._id }];
-      }
-    });
-  };
-
-  const removeFromCart = (productId) => {
-    setCartItems(prevItems => prevItems.filter(item => item.product._id !== productId));
-  };
-
-  const updateQuantity = (productId, quantity) => {
-    if (quantity < 1) {
-      removeFromCart(productId);
+  const addToCart = async (productId, variant, quantity = 1) => {
+    if (!isAuthenticated) {
+      setError('Please log in to add items to cart');
       return;
     }
     
-    setCartItems(prevItems =>
-      prevItems.map(item =>
-        item.product._id === productId ? { ...item, quantity } : item
-      )
-    );
+    try {
+      setLoading(true);
+      const response = await api.post('/cart/add', {
+        productId,
+        variant,
+        quantity
+      });
+      setCart(response.data);
+      setError(null);
+      return response.data;
+    } catch (err) {
+      setError(err.response?.data?.message || err.message);
+      console.error('Error adding to cart:', err);
+      throw err;
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const clearCart = () => {
-    setCartItems([]);
+  const updateQuantity = async (itemId, quantity) => {
+    if (!isAuthenticated) {
+      setError('Please log in to update cart');
+      return;
+    }
+    
+    try {
+      setLoading(true);
+      const response = await api.put(`/cart/update/${itemId}`, {
+        quantity
+      });
+      setCart(response.data);
+      setError(null);
+      return response.data;
+    } catch (err) {
+      setError(err.response?.data?.message || err.message);
+      console.error('Error updating cart item:', err);
+      throw err;
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const cartCount = cartItems.reduce(
-    (count, item) => count + item.quantity,
-    0
-  );
+  const removeFromCart = async (itemId) => {
+    if (!isAuthenticated) {
+      setError('Please log in to remove items from cart');
+      return;
+    }
+    
+    try {
+      setLoading(true);
+      const response = await api.delete(`/cart/remove/${itemId}`);
+      setCart(response.data);
+      setError(null);
+      return response.data;
+    } catch (err) {
+      setError(err.response?.data?.message || err.message);
+      console.error('Error removing from cart:', err);
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  };
 
-  const cartTotal = cartItems.reduce(
-    (total, item) => total + item.product.price * item.quantity,
-    0
-  );
+  const clearCart = async () => {
+    if (!isAuthenticated) {
+      setError('Please log in to clear cart');
+      return;
+    }
+    
+    try {
+      setLoading(true);
+      const response = await api.delete('/cart/clear');
+      setCart({ items: [], totalPrice: 0, totalItems: 0 });
+      setError(null);
+      return response.data;
+    } catch (err) {
+      setError(err.response?.data?.message || err.message);
+      console.error('Error clearing cart:', err);
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const applyCoupon = async (couponCode) => {
+    if (!isAuthenticated) {
+      setError('Please log in to apply coupon');
+      return;
+    }
+    
+    try {
+      setLoading(true);
+      const response = await api.post('/cart/apply-coupon', {
+        couponCode
+      });
+      setCart(response.data);
+      setError(null);
+      return response.data;
+    } catch (err) {
+      setError(err.response?.data?.message || err.message);
+      console.error('Error applying coupon:', err);
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const cartCount = cart?.totalItems || 0;
+  const cartTotal = cart?.totalPrice || 0;
 
   const value = {
-    cartItems,
+    cart,
     cartCount,
     cartTotal,
+    loading,
+    error,
     addToCart,
     removeFromCart,
     updateQuantity,
-    clearCart
+    clearCart,
+    applyCoupon,
+    fetchCart
   };
 
   return (

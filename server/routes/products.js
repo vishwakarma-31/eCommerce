@@ -1,52 +1,73 @@
 const express = require('express');
 const router = express.Router();
 const {
-  getAllProducts,
-  getFeaturedProducts,
-  getTrendingProducts,
-  searchProducts,
-  getProductById,
+  getProducts,
+  getProduct,
   createProduct,
   updateProduct,
   deleteProduct,
+  getFeaturedProducts,
+  getNewArrivalProducts,
+  getBestSellerProducts,
+  getRelatedProducts,
+  searchProducts,
   uploadProductImages,
-  likeProduct,
-  viewProduct
+  deleteProductImage,
+  addQuestion,
+  addAnswer,
+  upvoteQuestion,
+  upvoteAnswer
 } = require('../controllers/products');
-const { protect, isCreator, isAdmin } = require('../middleware/auth');
-const { upload, processImages } = require('../middleware/imageUpload');
+const { protect, authorize } = require('../middleware/auth');
+const { cacheMiddleware } = require('../middleware/cacheMiddleware');
 
-// GET /api/products - Get all products (with pagination, filtering, sorting)
-router.get('/', getAllProducts);
+// Public routes with caching
+router.route('/')
+  .get(cacheMiddleware(300), getProducts); // Cache for 5 minutes
 
-// GET /api/products/featured - Get featured products
-router.get('/featured', getFeaturedProducts);
+router.route('/:id')
+  .get(cacheMiddleware(600), getProduct); // Cache for 10 minutes
 
-// GET /api/products/trending - Get trending products
-router.get('/trending', getTrendingProducts);
+router.route('/featured')
+  .get(cacheMiddleware(300), getFeaturedProducts); // Cache for 5 minutes
 
-// GET /api/products/search - Search products by title/description
-router.get('/search', searchProducts);
+router.route('/new-arrivals')
+  .get(cacheMiddleware(300), getNewArrivalProducts); // Cache for 5 minutes
 
-// GET /api/products/:id - Get single product by ID
-router.get('/:id', getProductById);
+router.route('/best-sellers')
+  .get(cacheMiddleware(300), getBestSellerProducts); // Cache for 5 minutes
 
-// POST /api/products/ - Create new product (Creator only, protected)
-router.post('/', protect, isCreator, createProduct);
+router.route('/related/:id')
+  .get(getRelatedProducts);
 
-// PUT /api/products/:id - Update product (Creator/Admin, protected)
-router.put('/:id', protect, isCreator, updateProduct);
+router.route('/search')
+  .get(cacheMiddleware(120), searchProducts); // Cache for 2 minutes
 
-// DELETE /api/products/:id - Delete product (Creator/Admin, protected)
-router.delete('/:id', protect, isCreator, deleteProduct);
+// Protected routes
+router.route('/')
+  .post(protect, authorize('Creator', 'Admin'), createProduct);
 
-// POST /api/products/:id/images - Upload product images (Creator, protected)
-router.post('/:id/images', protect, isCreator, upload.array('images', 5), processImages, uploadProductImages);
+router.route('/:id')
+  .put(protect, authorize('Creator', 'Admin'), updateProduct)
+  .delete(protect, authorize('Admin'), deleteProduct);
 
-// POST /api/products/:id/like - Like/unlike product (protected)
-router.post('/:id/like', protect, likeProduct);
+router.route('/:id/upload-images')
+  .post(protect, authorize('Creator', 'Admin'), uploadProductImages);
 
-// POST /api/products/:id/view - Increment view count
-router.post('/:id/view', viewProduct);
+router.route('/:id/images/:imageId')
+  .delete(protect, authorize('Creator', 'Admin'), deleteProductImage);
+
+// Q&A routes
+router.route('/:id/questions')
+  .post(protect, addQuestion);
+
+router.route('/:id/questions/:questionId/answers')
+  .post(protect, authorize('Admin', 'Creator'), addAnswer);
+
+router.route('/:id/questions/:questionId/upvote')
+  .post(protect, upvoteQuestion);
+
+router.route('/:id/questions/:questionId/answers/:answerId/upvote')
+  .post(protect, upvoteAnswer);
 
 module.exports = router;

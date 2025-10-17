@@ -97,6 +97,168 @@ class RecommendationEngine {
       return [];
     }
   }
+  
+  /**
+   * Get personalized recommendations based on user's browsing history
+   * @param {Array} browsingHistory - Array of product IDs the user has viewed
+   * @param {Number} limit - Maximum number of recommendations to return
+   * @returns {Array} Array of recommended products
+   */
+  static async getBrowsingHistoryRecommendations(browsingHistory, limit = 10) {
+    try {
+      if (!browsingHistory || browsingHistory.length === 0) {
+        return [];
+      }
+      
+      // Get products from the browsing history
+      const historyProducts = await ProductConcept.find({
+        _id: { $in: browsingHistory },
+        status: { $in: ['Funding', 'Marketplace'] }
+      });
+      
+      if (historyProducts.length === 0) {
+        return [];
+      }
+      
+      // Extract categories and tags from browsing history
+      const categories = [...new Set(historyProducts.map(product => product.category))];
+      const allTags = historyProducts.flatMap(product => product.tags || []);
+      const tags = [...new Set(allTags)];
+      
+      // Build recommendation query
+      const query = {
+        _id: { $nin: browsingHistory }, // Exclude products already viewed
+        status: { $in: ['Funding', 'Marketplace'] }
+      };
+      
+      // Add category or tag filter if available
+      if (categories.length > 0 || tags.length > 0) {
+        query.$or = [];
+        if (categories.length > 0) {
+          query.$or.push({ category: { $in: categories } });
+        }
+        if (tags.length > 0) {
+          query.$or.push({ tags: { $in: tags } });
+        }
+      }
+      
+      // Get recommendations
+      const recommendations = await ProductConcept.find(query)
+        .sort({ popularityScore: -1, averageRating: -1, views: -1 })
+        .limit(limit);
+      
+      return recommendations;
+    } catch (error) {
+      console.error('Error getting browsing history recommendations:', error);
+      return [];
+    }
+  }
+  
+  /**
+   * Get recommendations based on user's cart items
+   * @param {Array} cartItems - Array of product IDs in the user's cart
+   * @param {Number} limit - Maximum number of recommendations to return
+   * @returns {Array} Array of recommended products
+   */
+  static async getCartBasedRecommendations(cartItems, limit = 10) {
+    try {
+      if (!cartItems || cartItems.length === 0) {
+        return [];
+      }
+      
+      // Extract product IDs from cart items
+      const productIds = cartItems.map(item => item.product);
+      
+      // Get products from the cart
+      const cartProducts = await ProductConcept.find({
+        _id: { $in: productIds },
+        status: { $in: ['Funding', 'Marketplace'] }
+      });
+      
+      if (cartProducts.length === 0) {
+        return [];
+      }
+      
+      // Extract categories and tags from cart products
+      const categories = [...new Set(cartProducts.map(product => product.category))];
+      const allTags = cartProducts.flatMap(product => product.tags || []);
+      const tags = [...new Set(allTags)];
+      
+      // Build recommendation query
+      const query = {
+        _id: { $nin: productIds }, // Exclude products already in cart
+        status: { $in: ['Funding', 'Marketplace'] }
+      };
+      
+      // Add category or tag filter if available
+      if (categories.length > 0 || tags.length > 0) {
+        query.$or = [];
+        if (categories.length > 0) {
+          query.$or.push({ category: { $in: categories } });
+        }
+        if (tags.length > 0) {
+          query.$or.push({ tags: { $in: tags } });
+        }
+      }
+      
+      // Get recommendations
+      const recommendations = await ProductConcept.find(query)
+        .sort({ popularityScore: -1, averageRating: -1, views: -1 })
+        .limit(limit);
+      
+      return recommendations;
+    } catch (error) {
+      console.error('Error getting cart-based recommendations:', error);
+      return [];
+    }
+  }
+  
+  /**
+   * Get personalized recommendations for a user
+   * Combines multiple recommendation strategies
+   * @param {Object} user - User object with browsing history, purchase history, etc.
+   * @param {Array} cartItems - Array of items in user's cart
+   * @param {Number} limit - Maximum number of recommendations to return
+   * @returns {Array} Array of recommended products
+   */
+  static async getPersonalizedRecommendations(user, cartItems = [], limit = 10) {
+    try {
+      // Get recommendations from different sources
+      const [browsingRecs, cartRecs, trendingRecs] = await Promise.all([
+        this.getBrowsingHistoryRecommendations(user.browsingHistory || [], Math.ceil(limit / 3)),
+        this.getCartBasedRecommendations(cartItems, Math.ceil(limit / 3)),
+        this.getTrendingProducts(Math.ceil(limit / 3))
+      ]);
+      
+      // Combine all recommendations
+      const allRecommendations = [...browsingRecs, ...cartRecs, ...trendingRecs];
+      
+      // Remove duplicates by ID
+      const uniqueRecommendations = Array.from(
+        new Map(allRecommendations.map(product => [product._id.toString(), product])).values()
+      );
+      
+      // Sort by relevance (popularity score, ratings, views)
+      uniqueRecommendations.sort((a, b) => {
+        // Sort by popularity score first
+        if (b.popularityScore !== a.popularityScore) {
+          return b.popularityScore - a.popularityScore;
+        }
+        // Then by average rating
+        if (b.averageRating !== a.averageRating) {
+          return b.averageRating - a.averageRating;
+        }
+        // Then by views
+        return b.views - a.views;
+      });
+      
+      // Return limited results
+      return uniqueRecommendations.slice(0, limit);
+    } catch (error) {
+      console.error('Error getting personalized recommendations:', error);
+      return [];
+    }
+  }
 }
 
 module.exports = RecommendationEngine;

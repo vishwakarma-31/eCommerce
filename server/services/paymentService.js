@@ -1,6 +1,109 @@
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+const paypal = require('paypal-rest-sdk');
 const PreOrder = require('../models/PreOrder');
 const ProductConcept = require('../models/ProductConcept');
+const Order = require('../models/Order');
+const logger = require('../utils/logger');
+
+// Configure PayPal
+paypal.configure({
+  mode: process.env.PAYPAL_MODE || 'sandbox', // sandbox or live
+  client_id: process.env.PAYPAL_CLIENT_ID,
+  client_secret: process.env.PAYPAL_CLIENT_SECRET
+});
+
+/**
+ * Create a payment intent for Stripe
+ * @param {Object} paymentData - Payment data including amount, currency, and metadata
+ * @returns {Object} Stripe payment intent
+ */
+const createStripePaymentIntent = async (paymentData) => {
+  try {
+    const paymentIntent = await stripe.paymentIntents.create({
+      amount: paymentData.amount,
+      currency: paymentData.currency || 'usd',
+      capture_method: paymentData.captureMethod || 'automatic',
+      metadata: paymentData.metadata || {}
+    });
+    
+    return paymentIntent;
+  } catch (error) {
+    logger.error('Error creating Stripe payment intent:', error);
+    throw error;
+  }
+};
+
+/**
+ * Create a PayPal payment
+ * @param {Object} paymentData - Payment data including amount, currency, and description
+ * @returns {Object} PayPal payment object
+ */
+const createPayPalPayment = async (paymentData) => {
+  try {
+    const payment = {
+      intent: 'sale',
+      payer: {
+        payment_method: 'paypal'
+      },
+      redirect_urls: {
+        return_url: paymentData.returnUrl,
+        cancel_url: paymentData.cancelUrl
+      },
+      transactions: [{
+        item_list: {
+          items: paymentData.items
+        },
+        amount: {
+          currency: paymentData.currency || 'USD',
+          total: paymentData.totalAmount
+        },
+        description: paymentData.description
+      }]
+    };
+    
+    return new Promise((resolve, reject) => {
+      paypal.payment.create(payment, (error, payment) => {
+        if (error) {
+          logger.error('Error creating PayPal payment:', error);
+          reject(error);
+        } else {
+          resolve(payment);
+        }
+      });
+    });
+  } catch (error) {
+    logger.error('Error creating PayPal payment:', error);
+    throw error;
+  }
+};
+
+/**
+ * Execute a PayPal payment
+ * @param {String} paymentId - PayPal payment ID
+ * @param {String} payerId - PayPal payer ID
+ * @returns {Object} Executed PayPal payment
+ */
+const executePayPalPayment = async (paymentId, payerId) => {
+  try {
+    const execute_payment_json = {
+      payer_id: payerId
+    };
+    
+    return new Promise((resolve, reject) => {
+      paypal.payment.execute(paymentId, execute_payment_json, (error, payment) => {
+        if (error) {
+          logger.error('Error executing PayPal payment:', error);
+          reject(error);
+        } else {
+          resolve(payment);
+        }
+      });
+    });
+  } catch (error) {
+    logger.error('Error executing PayPal payment:', error);
+    throw error;
+  }
+};
 
 /**
  * Capture all pre-order payments for a successful project
@@ -30,15 +133,15 @@ const captureAllPreOrderPayments = async (productId) => {
         await preOrder.save();
         capturedCount++;
       } catch (error) {
-        console.error(`Failed to capture payment for pre-order ${preOrder._id}:`, error);
+        logger.error(`Failed to capture payment for pre-order ${preOrder._id}:`, error);
         // In a real implementation, you might want to handle failed captures differently
       }
     }
     
-    console.log(`Captured payments for ${capturedCount}/${preOrders.length} pre-orders for product ${productId}`);
+    logger.info(`Captured payments for ${capturedCount}/${preOrders.length} pre-orders for product ${productId}`);
     return capturedCount;
   } catch (error) {
-    console.error('Error capturing pre-order payments:', error);
+    logger.error('Error capturing pre-order payments:', error);
     throw error;
   }
 };
@@ -78,15 +181,15 @@ const cancelAllPreOrderPayments = async (productId) => {
         }
         cancelledCount++;
       } catch (error) {
-        console.error(`Failed to cancel payment for pre-order ${preOrder._id}:`, error);
+        logger.error(`Failed to cancel payment for pre-order ${preOrder._id}:`, error);
         // In a real implementation, you might want to handle failed cancellations differently
       }
     }
     
-    console.log(`Cancelled payments for ${cancelledCount}/${preOrders.length} pre-orders for product ${productId}`);
+    logger.info(`Cancelled payments for ${cancelledCount}/${preOrders.length} pre-orders for product ${productId}`);
     return cancelledCount;
   } catch (error) {
-    console.error('Error cancelling pre-order payments:', error);
+    logger.error('Error cancelling pre-order payments:', error);
     throw error;
   }
 };
@@ -116,13 +219,73 @@ const refundPreOrderPayment = async (preOrderId) => {
     
     return refund;
   } catch (error) {
-    console.error(`Failed to refund payment for pre-order ${preOrderId}:`, error);
+    logger.error(`Failed to refund payment for pre-order ${preOrderId}:`, error);
+    throw error;
+  }
+};
+
+/**
+ * Refund an order payment
+ * This function creates a refund for a specific order payment
+ * @param {String} orderId - The ID of the order
+ * @returns {Object} Stripe refund object
+ * @throws {Error} If there's an error during refund creation
+ */
+const refundOrderPayment = async (orderId) => {
+  try {
+    const order = await Order.findById(orderId);
+    if (!order) {
+      throw new Error('Order not found');
+    }
+    
+    // Create a refund with Stripe
+    const refund = await stripe.refunds.create({
+      payment_intent: order.stripePaymentIntentId,
+    });
+    
+    // Update order status
+    order.paymentStatus = 'Refunded';
+    order.orderStatus = 'Cancelled';
+    await order.save();
+    
+    return refund;
+  } catch (error) {
+    logger.error(`Failed to refund payment for order ${orderId}:`, error);
+    throw error;
+  }
+};
+
+/**
+ * Process a payment based on the payment method
+ * @param {Object} paymentData - Payment data including method, amount, and other details
+ * @returns {Object} Payment result
+ */
+const processPayment = async (paymentData) => {
+  try {
+    switch (paymentData.method) {
+      case 'stripe':
+        return await createStripePaymentIntent(paymentData);
+      case 'paypal':
+        return await createPayPalPayment(paymentData);
+      case 'cod':
+        // For Cash on Delivery, we don't process payment immediately
+        return { status: 'cod_pending' };
+      default:
+        throw new Error('Unsupported payment method');
+    }
+  } catch (error) {
+    logger.error(`Error processing ${paymentData.method} payment:`, error);
     throw error;
   }
 };
 
 module.exports = {
+  createStripePaymentIntent,
+  createPayPalPayment,
+  executePayPalPayment,
   captureAllPreOrderPayments,
   cancelAllPreOrderPayments,
-  refundPreOrderPayment
+  refundPreOrderPayment,
+  refundOrderPayment,
+  processPayment
 };

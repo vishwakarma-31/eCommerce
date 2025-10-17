@@ -59,6 +59,28 @@ exports.markAsRead = asyncHandler(async (req, res, next) => {
   });
 });
 
+// @desc    Mark notification as unread
+// @route   PUT /api/notifications/:id/unread
+// @access  Private
+exports.markAsUnread = asyncHandler(async (req, res, next) => {
+  const notification = await Notification.findOne({
+    _id: req.params.id,
+    user: req.user.id
+  });
+  
+  if (!notification) {
+    return next(new ErrorResponse('Notification not found', 404));
+  }
+  
+  notification.isRead = false;
+  await notification.save();
+  
+  res.status(200).json({
+    success: true,
+    data: notification
+  });
+});
+
 // @desc    Mark all notifications as read
 // @route   PUT /api/notifications/read-all
 // @access  Private
@@ -92,6 +114,99 @@ exports.deleteNotification = asyncHandler(async (req, res, next) => {
   res.status(200).json({
     success: true,
     data: {}
+  });
+});
+
+// @desc    Delete all read notifications
+// @route   DELETE /api/notifications/delete-read
+// @access  Private
+exports.deleteReadNotifications = asyncHandler(async (req, res, next) => {
+  const result = await Notification.deleteMany({
+    user: req.user.id,
+    isRead: true
+  });
+  
+  res.status(200).json({
+    success: true,
+    message: `${result.deletedCount} read notifications deleted`
+  });
+});
+
+// @desc    Get notification preferences
+// @route   GET /api/notifications/preferences
+// @access  Private
+exports.getNotificationPreferences = asyncHandler(async (req, res, next) => {
+  const user = await User.findById(req.user.id);
+  
+  if (!user) {
+    return next(new ErrorResponse('User not found', 404));
+  }
+  
+  res.status(200).json({
+    success: true,
+    data: {
+      emailNotifications: user.emailPreferences?.notifications ?? true,
+      pushNotifications: user.pushNotifications ?? true,
+      inAppNotifications: user.inAppNotifications ?? true
+    }
+  });
+});
+
+// @desc    Update notification preferences
+// @route   PUT /api/notifications/preferences
+// @access  Private
+exports.updateNotificationPreferences = asyncHandler(async (req, res, next) => {
+  const user = await User.findById(req.user.id);
+  
+  if (!user) {
+    return next(new ErrorResponse('User not found', 404));
+  }
+  
+  const { emailNotifications, pushNotifications, inAppNotifications } = req.body;
+  
+  // Update user preferences
+  if (emailNotifications !== undefined) {
+    user.emailPreferences = {
+      ...user.emailPreferences,
+      notifications: emailNotifications
+    };
+  }
+  
+  if (pushNotifications !== undefined) {
+    user.pushNotifications = pushNotifications;
+  }
+  
+  if (inAppNotifications !== undefined) {
+    user.inAppNotifications = inAppNotifications;
+  }
+  
+  await user.save();
+  
+  res.status(200).json({
+    success: true,
+    message: 'Notification preferences updated successfully',
+    data: {
+      emailNotifications: user.emailPreferences?.notifications ?? true,
+      pushNotifications: user.pushNotifications ?? true,
+      inAppNotifications: user.inAppNotifications ?? true
+    }
+  });
+});
+
+// @desc    Get notification count
+// @route   GET /api/notifications/count
+// @access  Private
+exports.getNotificationCount = asyncHandler(async (req, res, next) => {
+  const unreadCount = await Notification.countDocuments({
+    user: req.user.id,
+    isRead: false
+  });
+  
+  res.status(200).json({
+    success: true,
+    data: {
+      unreadCount
+    }
   });
 });
 

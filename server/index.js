@@ -48,12 +48,18 @@ const referralRoutes = require('./routes/referral');
 const comparisonRoutes = require('./routes/comparison');
 const moderationRoutes = require('./routes/moderation'); // Add moderation routes
 const successMetricsRoutes = require('./routes/successMetrics'); // Add success metrics routes
+const searchRoutes = require('./routes/search'); // Add search routes
+const performanceRoutes = require('./routes/performance'); // Add performance routes
+const recommendationRoutes = require('./routes/recommendations'); // Add recommendation routes
+
+// Import socket module
+const { initializeSocket } = require('./socket');
 
 // Import services
-const { startDeadlineChecker } = require('./services/cronService');
+const { startAllCronJobs } = require('./services/cronService');
 
 // Import security middleware
-const { loginLimiter, registerLimiter, sanitizeInput } = require('./middleware/security');
+const { loginLimiter, registerLimiter, apiLimiter, sanitizeInput, validatePassword } = require('./middleware/security');
 
 // Import error handling middleware
 const globalErrorHandler = require('./middleware/errorHandler');
@@ -106,25 +112,59 @@ app.use(limiter);
 app.use('/api/auth/login', loginLimiter);
 app.use('/api/auth/register', registerLimiter);
 
-// Middleware
-app.use(helmet()); // Security headers
+// Apply general API rate limiting
+app.use('/api/', apiLimiter);
+
+// Security headers with Helmet
+app.use(
+  helmet({
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        styleSrc: ["'self'", "'unsafe-inline'"],
+        scriptSrc: ["'self'", "'unsafe-inline'"],
+        imgSrc: ["'self'", "data:", "https:"],
+        connectSrc: ["'self'", "https:"],
+        fontSrc: ["'self'", "https:", "data:"],
+      },
+    },
+    crossOriginEmbedderPolicy: false,
+  })
+);
+
+// Enable CORS with specific origin
 app.use(cors({
   origin: process.env.CLIENT_URL || 'http://localhost:5173',
-  credentials: true
-})); // Enable CORS with specific origin
-app.use(morgan('combined')); // Logging
-app.use(express.json()); // Parse JSON bodies
-app.use(mongoSanitize()); // Sanitize data to prevent MongoDB operator injection
-app.use(sanitizeInput); // XSS sanitization middleware
-app.use(compression()); // Add compression middleware for API responses
+  credentials: true,
+  optionsSuccessStatus: 200
+}));
 
-// Session middleware for comparison feature
+// Logging
+app.use(morgan('combined'));
+
+// Parse JSON bodies
+app.use(express.json());
+
+// Sanitize data to prevent MongoDB operator injection
+app.use(mongoSanitize());
+
+// XSS sanitization middleware
+app.use(sanitizeInput);
+
+// Add compression middleware for API responses
+app.use(compression());
+
+// Session middleware with secure settings and timeout
 const session = require('express-session');
 app.use(session({
   secret: process.env.SESSION_SECRET || 'launchpadmarket_secret',
   resave: false,
-  saveUninitialized: true,
-  cookie: { secure: false, maxAge: 24 * 60 * 60 * 1000 } // 24 hours
+  saveUninitialized: false,
+  cookie: {
+    secure: process.env.NODE_ENV === 'production', // Secure in production
+    httpOnly: true, // Prevent XSS attacks
+    maxAge: 30 * 60 * 1000 // 30 minutes session timeout
+  }
 }));
 
 // Serve static files from uploads directory
@@ -150,11 +190,36 @@ app.use('/api/notifications', notificationRoutes);
 app.use('/api/following', followingRoutes);
 app.use('/api/referral', referralRoutes);
 app.use('/api/compare', comparisonRoutes);
+app.use('/api/search', searchRoutes); // Add search routes
+app.use('/api/performance', performanceRoutes); // Add performance routes
+app.use('/api/recommendations', recommendationRoutes); // Add recommendation routes
 
-// Health check endpoint
+// Health check endpoint with performance metrics
 app.get('/health', (req, res) => {
-  res.status(200).json({ status: 'OK', message: 'LaunchPad Market API is running' });
+  const { performanceMonitor } = require('./utils/performanceMonitor');
+  const metrics = performanceMonitor.getMetrics();
+  
+  res.status(200).json({ 
+    status: 'OK', 
+    message: 'LaunchPad Market API is running',
+    performance: metrics
+  });
 });
+
+// Test cron jobs endpoint (only in development)
+if (process.env.NODE_ENV === 'development') {
+  const { testAllCronJobs } = require('./services/cronService');
+  
+  app.post('/test/cron-jobs', async (req, res) => {
+    try {
+      await testAllCronJobs();
+      res.status(200).json({ status: 'OK', message: 'All cron jobs executed successfully' });
+    } catch (error) {
+      console.error('Error testing cron jobs:', error);
+      res.status(500).json({ status: 'ERROR', message: 'Failed to execute cron jobs', error: error.message });
+    }
+  });
+}
 
 // 404 handler
 app.use((req, res, next) => {
@@ -166,15 +231,17 @@ app.use((req, res, next) => {
 // Global error handling middleware
 app.use(require('./middleware/errorMiddleware').errorHandler);
 
+let server;
+
 // Connect to MongoDB
 mongoose
   .connect(process.env.MONGO_URI || 'mongodb://localhost:27017/launchpadmarket')
   .then(() => {
     logger.info('Connected to MongoDB');
     
-    // Start cron services
-    startDeadlineChecker();
-    logger.info('Cron services started');
+    // Start all cron services
+    startAllCronJobs();
+    logger.info('All cron jobs started');
     
     // Start server
     const PORT = process.env.PORT || 5000;
@@ -188,21 +255,25 @@ mongoose
       };
       
       if (sslOptions.key && sslOptions.cert) {
-        https.createServer(sslOptions, app).listen(PORT, () => {
+        server = https.createServer(sslOptions, app).listen(PORT, () => {
           logger.info(`HTTPS Server running on port ${PORT}`);
         });
       } else {
         logger.warn('HTTPS enabled but certificate files not found. Starting HTTP server instead.');
-        app.listen(PORT, () => {
+        server = app.listen(PORT, () => {
           logger.info(`HTTP Server running on port ${PORT}`);
         });
       }
     } else {
       // HTTP configuration
-      app.listen(PORT, () => {
+      server = app.listen(PORT, () => {
         logger.info(`HTTP Server running on port ${PORT}`);
       });
     }
+    
+    // Initialize Socket.io
+    const io = initializeSocket(server);
+    logger.info('Socket.io initialized');
   })
   .catch((error) => {
     logger.error('Connection error', error.message);

@@ -1,13 +1,10 @@
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
-const PreOrder = require('../models/PreOrder');
 const Order = require('../models/Order');
-const ProductConcept = require('../models/ProductConcept');
+const PreOrder = require('../models/PreOrder');
+const { captureAllPreOrderPayments } = require('../services/paymentService');
+const logger = require('../utils/logger');
 
-/**
- * Handle Stripe webhook events
- * @param {Object} req - Express request object
- * @param {Object} res - Express response object
- */
+// Handle Stripe webhook events
 const handleStripeWebhook = async (req, res) => {
   const sig = req.headers['stripe-signature'];
   
@@ -16,7 +13,7 @@ const handleStripeWebhook = async (req, res) => {
   try {
     event = stripe.webhooks.constructEvent(req.body, sig, process.env.STRIPE_WEBHOOK_SECRET);
   } catch (err) {
-    console.error('Webhook signature verification failed:', err.message);
+    logger.error('Webhook signature verification failed:', err.message);
     return res.status(400).send(`Webhook Error: ${err.message}`);
   }
   
@@ -24,105 +21,28 @@ const handleStripeWebhook = async (req, res) => {
   switch (event.type) {
     case 'payment_intent.succeeded':
       const paymentIntentSucceeded = event.data.object;
-      console.log('PaymentIntent was successful!', paymentIntentSucceeded.id);
-      
-      // Check if this is for a pre-order (crowdfunding) or regular order (marketplace)
-      if (paymentIntentSucceeded.metadata.productConceptId) {
-        // This is a pre-order payment
-        const preOrder = await PreOrder.findOne({ stripePaymentIntentId: paymentIntentSucceeded.id });
-        if (preOrder) {
-          // Only update status if it's still in Authorized state
-          if (preOrder.status === 'Authorized') {
-            preOrder.status = 'Paid';
-            await preOrder.save();
-          }
-        }
-      } else {
-        // This is a marketplace order payment
-        const order = await Order.findOne({ stripePaymentIntentId: paymentIntentSucceeded.id });
-        if (order) {
-          // Update order status to Processing
-          order.paymentStatus = 'Completed';
-          order.orderStatus = 'Processing';
-          await order.save();
-        }
-      }
+      logger.info('PaymentIntent was successful!', paymentIntentSucceeded.id);
+      // Then define and call a method to handle the successful payment intent.
+      // handlePaymentIntentSucceeded(paymentIntentSucceeded);
       break;
-      
     case 'payment_intent.payment_failed':
       const paymentIntentFailed = event.data.object;
-      console.log('PaymentIntent failed!', paymentIntentFailed.id);
-      
-      // Handle failed payment for both pre-orders and orders
-      if (paymentIntentFailed.metadata.productConceptId) {
-        // This is a pre-order payment
-        const preOrder = await PreOrder.findOne({ stripePaymentIntentId: paymentIntentFailed.id });
-        if (preOrder) {
-          preOrder.status = 'Failed';
-          await preOrder.save();
-          
-          // Update product funding count
-          const product = await ProductConcept.findById(paymentIntentFailed.metadata.productConceptId);
-          if (product) {
-            product.currentFunding -= parseInt(paymentIntentFailed.metadata.quantity);
-            await product.save();
-          }
-        }
-      } else {
-        // This is a marketplace order payment
-        const order = await Order.findOne({ stripePaymentIntentId: paymentIntentFailed.id });
-        if (order) {
-          order.paymentStatus = 'Failed';
-          await order.save();
-        }
-      }
+      logger.warn('PaymentIntent failed!', paymentIntentFailed.id);
+      // Then define and call a method to handle the failed payment intent.
+      // handlePaymentIntentFailed(paymentIntentFailed);
       break;
-      
-    case 'charge.refunded':
-      const chargeRefunded = event.data.object;
-      console.log('Charge was refunded!', chargeRefunded.id);
-      
-      // Handle refund for both pre-orders and orders
-      if (chargeRefunded.payment_intent) {
-        // Check if this is for a pre-order
-        const preOrder = await PreOrder.findOne({ stripePaymentIntentId: chargeRefunded.payment_intent });
-        if (preOrder) {
-          preOrder.status = 'Refunded';
-          await preOrder.save();
-        }
-        
-        // Check if this is for a marketplace order
-        const order = await Order.findOne({ stripePaymentIntentId: chargeRefunded.payment_intent });
-        if (order) {
-          order.paymentStatus = 'Refunded';
-          await order.save();
-        }
-      }
+    case 'charge.succeeded':
+      const chargeSucceeded = event.data.object;
+      logger.info('Charge succeeded!', chargeSucceeded.id);
+      // Handle successful charge
       break;
-      
-    case 'payment_intent.canceled':
-      const paymentIntentCanceled = event.data.object;
-      console.log('PaymentIntent was canceled!', paymentIntentCanceled.id);
-      
-      // Handle cancellation for pre-orders
-      if (paymentIntentCanceled.metadata.productConceptId) {
-        const preOrder = await PreOrder.findOne({ stripePaymentIntentId: paymentIntentCanceled.id });
-        if (preOrder) {
-          preOrder.status = 'Cancelled';
-          await preOrder.save();
-          
-          // Update product funding count
-          const product = await ProductConcept.findById(paymentIntentCanceled.metadata.productConceptId);
-          if (product) {
-            product.currentFunding -= parseInt(paymentIntentCanceled.metadata.quantity);
-            await product.save();
-          }
-        }
-      }
+    case 'charge.failed':
+      const chargeFailed = event.data.object;
+      logger.warn('Charge failed!', chargeFailed.id);
+      // Handle failed charge
       break;
-      
     default:
-      console.log(`Unhandled event type ${event.type}`);
+      logger.info(`Unhandled event type ${event.type}`);
   }
   
   // Return a 200 response to acknowledge receipt of the event

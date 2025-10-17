@@ -1,7 +1,14 @@
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 const { body, validationResult } = require('express-validator');
-const { sendWelcomeEmail } = require('../services/emailService');
+const { sendWelcomeEmail } = require('../utils/emailService');
+const {
+  registerUser,
+  loginUser,
+  getMe,
+  verifyEmail,
+  resendVerificationEmail
+} = require('./improvedAuth');
 
 // Generate JWT token with 24-hour expiration as specified in Section 9
 const generateToken = (id) => {
@@ -10,112 +17,9 @@ const generateToken = (id) => {
   });
 };
 
-// Register user
-const registerUser = async (req, res) => {
-  try {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
-    }
-
-    const { name, email, password } = req.body;
-
-    // Check if user exists
-    const userExists = await User.findOne({ email });
-
-    if (userExists) {
-      return res.status(400).json({ message: 'User already exists' });
-    }
-
-    // Create user
-    const user = await User.create({
-      name,
-      email,
-      password
-    });
-
-    if (user) {
-      // Send welcome email
-      try {
-        await sendWelcomeEmail(user);
-      } catch (emailError) {
-        console.error('Failed to send welcome email:', emailError);
-        // Don't fail the registration if email sending fails
-      }
-      
-      res.status(201).json({
-        _id: user._id,
-        name: user.name,
-        email: user.email,
-        role: user.role,
-        token: generateToken(user._id)
-      });
-    } else {
-      res.status(400).json({ message: 'Invalid user data' });
-    }
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-};
-
-// Login user
-const loginUser = async (req, res) => {
-  try {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
-    }
-
-    const { email, password } = req.body;
-
-    // Check for user email
-    const user = await User.findOne({ email });
-
-    if (user && (await user.comparePassword(password))) {
-      res.json({
-        _id: user._id,
-        name: user.name,
-        email: user.email,
-        role: user.role,
-        token: generateToken(user._id)
-      });
-    } else {
-      res.status(401).json({ message: 'Invalid email or password' });
-    }
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-};
-
 // Logout user
 const logoutUser = async (req, res) => {
   res.json({ message: 'Logged out successfully' });
-};
-
-// Get current user data
-const getMe = async (req, res) => {
-  try {
-    const user = await User.findById(req.user._id);
-    
-    if (!user) {
-      return res.status(404).json({ message: 'User not found' });
-    }
-
-    res.json({
-      _id: user._id,
-      name: user.name,
-      email: user.email,
-      role: user.role,
-      profileImage: user.profileImage,
-      bio: user.bio,
-      phone: user.phone,
-      address: user.address,
-      isVerified: user.isVerified,
-      isActive: user.isActive
-    });
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
 };
 
 // Forgot password
@@ -183,5 +87,7 @@ module.exports = {
   getMe,
   forgotPassword,
   resetPassword,
-  changePassword
+  changePassword,
+  verifyEmail,
+  resendVerificationEmail
 };

@@ -27,7 +27,51 @@ const paymentService = {
 
   // Process marketplace payment
   processMarketplacePayment: async (paymentData) => {
-    const response = await API.post('/orders/process-payment', paymentData);
+    const response = await API.post('/orders/create-payment', paymentData);
+    return response.data;
+  },
+
+  // Create an order
+  createOrder: async (orderData) => {
+    const response = await API.post('/orders', orderData);
+    return response.data;
+  },
+
+  // Get user's orders
+  getMyOrders: async (params = {}) => {
+    const response = await API.get('/orders/my-orders', { params });
+    return response.data;
+  },
+
+  // Get order by ID
+  getOrderById: async (id) => {
+    const response = await API.get(`/orders/${id}`);
+    return response.data;
+  },
+
+  // Cancel order
+  cancelOrder: async (id) => {
+    const response = await API.put(`/orders/${id}/cancel`);
+    return response.data;
+  },
+
+  // Track order
+  trackOrder: async (id) => {
+    const response = await API.get(`/orders/${id}/track`);
+    return response.data;
+  },
+
+  // Download invoice
+  downloadInvoice: async (id) => {
+    const response = await API.get(`/orders/${id}/invoice`, {
+      responseType: 'blob'
+    });
+    return response.data;
+  },
+
+  // Request return
+  requestReturn: async (id, reason) => {
+    const response = await API.post(`/orders/${id}/return`, { reason });
     return response.data;
   }
 };

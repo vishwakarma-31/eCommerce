@@ -30,11 +30,16 @@ const orderSchema = new mongoose.Schema({
   },
   paymentMethod: {
     type: String,
-    required: true
+    required: true,
+    enum: ['card', 'paypal', 'cod']
   },
   stripePaymentIntentId: {
     type: String,
-    required: true
+    required: false
+  },
+  paypalPaymentId: {
+    type: String,
+    required: false
   },
   paymentStatus: {
     type: String,
@@ -76,14 +81,24 @@ const orderSchema = new mongoose.Schema({
   },
   deliveredAt: {
     type: Date
-  }
+  },
+  returnRequested: {
+    type: Boolean,
+    default: false
+  },
+  returnReason: {
+    type: String
+  },
+  returnRequestedAt: {
+    type: Date
+  },
+  statusHistory: [{
+    status: String,
+    timestamp: Date,
+    note: String
+  }]
 }, {
   timestamps: true
 });
-
-// Critical Indexes for Performance
-orderSchema.index({ buyer: 1 }); // Index for querying orders by buyer
-orderSchema.index({ orderStatus: 1 }); // Index for status-based queries
-orderSchema.index({ createdAt: -1 }); // Index for sorting by creation date
 
 module.exports = mongoose.model('Order', orderSchema);

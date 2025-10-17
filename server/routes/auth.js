@@ -10,6 +10,10 @@ const {
   resetPassword,
   changePassword
 } = require('../controllers/auth');
+const { 
+  verifyEmail, 
+  resendVerificationEmail 
+} = require('../controllers/improvedAuth');
 const { protect } = require('../middleware/auth');
 
 // Register validation with stronger requirements as specified in Section 9
@@ -41,6 +45,21 @@ const loginValidation = [
     .withMessage('Password is required')
 ];
 
+// Email verification validation
+const emailVerificationValidation = [
+  body('token')
+    .exists()
+    .withMessage('Verification token is required')
+];
+
+// Resend verification email validation
+const resendVerificationValidation = [
+  body('email')
+    .isEmail()
+    .withMessage('Please provide a valid email')
+    .normalizeEmail()
+];
+
 // POST /api/auth/register - Register new user
 router.post('/register', registerValidation, registerUser);
 
@@ -61,5 +80,11 @@ router.post('/reset-password/:token', resetPassword);
 
 // PUT /api/auth/change-password - Change password (protected)
 router.put('/change-password', protect, changePassword);
+
+// POST /api/auth/verify-email - Verify email with token
+router.post('/verify-email', emailVerificationValidation, verifyEmail);
+
+// POST /api/auth/resend-verification - Resend verification email
+router.post('/resend-verification', resendVerificationValidation, resendVerificationEmail);
 
 module.exports = router;

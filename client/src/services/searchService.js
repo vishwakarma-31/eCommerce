@@ -36,7 +36,7 @@ const searchService = {
       if (page) searchParams.append('page', page);
       if (limit) searchParams.append('limit', limit);
       
-      const response = await API.get(`/products/search?${searchParams.toString()}`);
+      const response = await API.get(`/search?${searchParams.toString()}`);
       return response.data;
     } catch (error) {
       throw error;
@@ -44,35 +44,52 @@ const searchService = {
   },
   
   /**
-   * Get all products with filtering and sorting
-   * @param {Object} params - Filter and sort parameters
-   * @returns {Promise} - Products list
+   * Get search suggestions/autocomplete
+   * @param {String} query - Search query
+   * @param {Number} limit - Number of suggestions to return
+   * @returns {Promise} - Array of suggestions
    */
-  getProducts: async (params) => {
+  getSearchSuggestions: async (query, limit = 10) => {
     try {
-      const {
-        categories,
-        minPrice,
-        maxPrice,
-        status,
-        minRating,
-        sortBy,
-        page,
-        limit
-      } = params;
-      
       const searchParams = new URLSearchParams();
-      
-      if (categories && categories.length > 0) searchParams.append('categories', categories.join(','));
-      if (minPrice !== null && minPrice !== undefined) searchParams.append('minPrice', minPrice);
-      if (maxPrice !== null && maxPrice !== undefined) searchParams.append('maxPrice', maxPrice);
-      if (status) searchParams.append('status', status);
-      if (minRating !== null && minRating !== undefined) searchParams.append('minRating', minRating);
-      if (sortBy) searchParams.append('sortBy', sortBy);
-      if (page) searchParams.append('page', page);
+      if (query) searchParams.append('q', query);
       if (limit) searchParams.append('limit', limit);
       
-      const response = await API.get(`/products?${searchParams.toString()}`);
+      const response = await API.get(`/search/suggestions?${searchParams.toString()}`);
+      return response.data.data;
+    } catch (error) {
+      throw error;
+    }
+  },
+  
+  /**
+   * Get popular searches
+   * @param {Number} limit - Number of popular searches to return
+   * @returns {Promise} - Array of popular searches
+   */
+  getPopularSearches: async (limit = 10) => {
+    try {
+      const searchParams = new URLSearchParams();
+      if (limit) searchParams.append('limit', limit);
+      
+      const response = await API.get(`/search/popular?${searchParams.toString()}`);
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
+  
+  /**
+   * Get user search history
+   * @param {Number} limit - Number of history items to return
+   * @returns {Promise} - Array of search history items
+   */
+  getUserSearchHistory: async (limit = 10) => {
+    try {
+      const searchParams = new URLSearchParams();
+      if (limit) searchParams.append('limit', limit);
+      
+      const response = await API.get(`/search/history?${searchParams.toString()}`);
       return response.data;
     } catch (error) {
       throw error;
@@ -108,9 +125,37 @@ const searchService = {
           'Food & Beverage',
           'Art & Crafts'
         ],
-        statuses: [
-          'Funding',
-          'Marketplace'
+        brands: [
+          'Apple',
+          'Samsung',
+          'Nike',
+          'Adidas',
+          'Sony',
+          'Microsoft',
+          'Amazon',
+          'Google',
+          'Tesla',
+          'LG'
+        ],
+        colors: [
+          'Black',
+          'White',
+          'Red',
+          'Blue',
+          'Green',
+          'Yellow',
+          'Purple',
+          'Pink',
+          'Orange',
+          'Brown'
+        ],
+        sizes: [
+          'XS',
+          'S',
+          'M',
+          'L',
+          'XL',
+          'XXL'
         ],
         ratings: [
           { value: 4, label: '4+ stars' },
@@ -119,12 +164,13 @@ const searchService = {
           { value: 1, label: '1+ stars' }
         ],
         sortOptions: [
-          { value: 'popularity', label: 'Most popular' },
+          { value: 'relevance', label: 'Relevance' },
           { value: 'priceLowHigh', label: 'Price: Low to High' },
           { value: 'priceHighLow', label: 'Price: High to Low' },
-          { value: 'endingSoon', label: 'Ending soon' },
-          { value: 'newest', label: 'Newest first' },
-          { value: 'highestRated', label: 'Highest rated' }
+          { value: 'rating', label: 'Average Rating' },
+          { value: 'newest', label: 'Newest First' },
+          { value: 'bestSelling', label: 'Best Selling' },
+          { value: 'mostReviewed', label: 'Most Reviewed' }
         ]
       };
       

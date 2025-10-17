@@ -24,9 +24,26 @@ export default defineConfig({
         manualChunks: {
           vendor: ['react', 'react-dom'],
           router: ['react-router-dom'],
-          utils: ['axios']
+          utils: ['axios'],
+          charts: ['recharts'],
+          socket: ['socket.io-client'],
+          forms: ['react-hook-form'],
+          notifications: ['react-toastify']
         }
       }
-    }
+    },
+    // Enable CSS code splitting
+    cssCodeSplit: true,
+    // Minify JavaScript and CSS
+    minify: 'esbuild', // Use esbuild instead of terser
+    // Enable gzip compression
+    brotliSize: true,
+    // Chunk size warning limit
+    chunkSizeWarningLimit: 1000
+  },
+  // Optimize dependencies
+  optimizeDeps: {
+    include: ['react', 'react-dom', 'react-router-dom'],
+    exclude: []
   }
 })
