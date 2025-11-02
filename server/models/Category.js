@@ -33,8 +33,7 @@ categorySchema.pre('save', function(next) {
 });
 
 // Add indexes
-categorySchema.index({ name: 1 }); // Index for querying by name
-categorySchema.index({ slug: 1 }); // Index for querying by slug
+// Name and slug indexes are already defined with unique: true in schema definition
 categorySchema.index({ isActive: 1 }); // Index for active categories
 
 module.exports = mongoose.model('Category', categorySchema);

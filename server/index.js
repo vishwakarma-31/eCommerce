@@ -277,4 +277,5 @@ mongoose
   })
   .catch((error) => {
     logger.error('Connection error', error.message);
+    logger.error('Please check your MONGO_URI in the .env file. For MongoDB Atlas, make sure to replace the placeholder credentials with your actual MongoDB Atlas credentials.');
   });

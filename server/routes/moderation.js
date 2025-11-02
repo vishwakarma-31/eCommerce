@@ -6,7 +6,10 @@ const {
   getActivityLogs,
   contentFilter
 } = require('../controllers/moderation');
-const { protect, isAdmin } = require('../middleware/auth');
+const { protect, authorize } = require('../middleware/auth');
+
+// Create role-specific middleware
+const isAdmin = authorize('Admin');
 
 const router = express.Router();
 

@@ -303,8 +303,8 @@ const upvoteAnswer = asyncHandler(async (req, res, next) => {
 });
 
 module.exports = {
-  getAllProducts,
-  getProductById,
+  getProducts,
+  getProduct,
   createProduct,
   updateProduct,
   deleteProduct,
@@ -313,8 +313,8 @@ module.exports = {
   getBestSellerProducts,
   getRelatedProducts,
   searchProducts,
-  addProductImages,
-  removeProductImage,
+  uploadProductImages,
+  deleteProductImage,
   // Q&A methods
   addQuestion,
   addAnswer,

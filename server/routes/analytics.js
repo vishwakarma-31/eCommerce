@@ -23,7 +23,10 @@ const {
   exportPDF
 } = require('../controllers/analyticsController');
 
-const { protect, isAdmin } = require('../middleware/auth');
+const { protect, authorize } = require('../middleware/auth');
+
+// Create role-specific middleware
+const isAdmin = authorize('Admin');
 
 // Recommendation routes
 router.get('/recommendations/user', protect, getUserRecommendations);

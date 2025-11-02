@@ -6,7 +6,10 @@ const {
   getUserEngagementOverTime,
   getConversionFunnel
 } = require('../controllers/successMetrics');
-const { protect, isAdmin } = require('../middleware/auth');
+const { protect, authorize } = require('../middleware/auth');
+
+// Create role-specific middleware
+const isAdmin = authorize('Admin');
 
 // All routes require admin authentication
 router.use(protect);

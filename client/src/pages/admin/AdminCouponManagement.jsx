@@ -4,7 +4,7 @@ import { useAuth } from '../../context/AuthContext';
 import Loader from '../../components/common/Loader';
 import Button from '../../components/common/Button';
 import Pagination from '../../components/common/Pagination';
-import { adminService } from '../../services/adminService';
+import adminService from '../../services/adminService';
 
 const AdminCouponManagement = () => {
   const { currentUser, isAuthenticated } = useAuth();

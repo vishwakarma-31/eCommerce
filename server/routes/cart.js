@@ -8,7 +8,10 @@ const {
   clearCart,
   applyCoupon
 } = require('../controllers/cart');
-const { protect, isBacker } = require('../middleware/auth');
+const { protect, authorize } = require('../middleware/auth');
+
+// Create role-specific middleware
+const isBacker = authorize('Backer', 'Creator', 'Admin');
 
 // GET /api/cart/ - Get user's cart (protected)
 router.get('/', protect, isBacker, getCart);

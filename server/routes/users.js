@@ -27,7 +27,11 @@ const {
   addRecentlyViewed,
   clearRecentlyViewed
 } = require('../controllers/users');
-const { protect, isAdmin, isBacker } = require('../middleware/auth');
+const { protect, authorize } = require('../middleware/auth');
+
+// Create role-specific middleware
+const isAdmin = authorize('Admin');
+const isBacker = authorize('Backer', 'Creator', 'Admin');
 const { upload, processImages } = require('../middleware/imageUpload');
 
 // GET /api/users/:id/profile - Get public user profile

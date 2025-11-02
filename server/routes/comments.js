@@ -8,7 +8,10 @@ const {
   deleteComment,
   likeComment
 } = require('../controllers/comments');
-const { protect, isBacker } = require('../middleware/auth');
+const { protect, authorize } = require('../middleware/auth');
+
+// Create role-specific middleware
+const isBacker = authorize('Backer', 'Creator', 'Admin');
 
 // GET /api/comments/product/:productId - Get all comments for a product
 router.get('/product/:productId', getProductComments);

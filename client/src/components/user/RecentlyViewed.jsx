@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import ProductCard from '../product/ProductCard';
 import Button from '../common/Button';
 import Loader from '../common/Loader';
-import { userService } from '../../services/userService';
+import userService from '../../services/userService';
 
 const RecentlyViewed = () => {
   const [recentlyViewed, setRecentlyViewed] = useState([]);

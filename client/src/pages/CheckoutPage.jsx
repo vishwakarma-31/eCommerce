@@ -4,7 +4,6 @@ import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
 import Button from '../components/common/Button';
 import Input from '../components/common/Input';
-import React from 'react';
 import MultiStepCheckout from '../components/checkout/MultiStepCheckout';
 
 const CheckoutPage = () => {

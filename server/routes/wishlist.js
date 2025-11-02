@@ -5,7 +5,10 @@ const {
   addToWishlist,
   removeFromWishlist
 } = require('../controllers/wishlist');
-const { protect, isBacker } = require('../middleware/auth');
+const { protect, authorize } = require('../middleware/auth');
+
+// Create role-specific middleware
+const isBacker = authorize('Backer', 'Creator', 'Admin');
 
 // GET /api/wishlist - Get user's wishlist
 router.get('/', protect, isBacker, getWishlist);

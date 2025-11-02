@@ -433,61 +433,7 @@ const generateWeeklySalesReport = async () => {
   }
 };
 
-/**
- * Send newsletter to subscribers
- * Runs weekly on Sunday at midnight
- */
-const sendWeeklyNewsletter = async () => {
-  try {
-    console.log('Sending weekly newsletter...');
-    
-    // Find all active users
-    const users = await User.find({ isActive: true });
-    
-    // Get featured products for the newsletter
-    const featuredProducts = await ProductConcept.find({ isFeatured: true })
-      .sort({ createdAt: -1 })
-      .limit(5);
-    
-    // Prepare newsletter data
-    const newsletterData = {
-      featuredProducts: featuredProducts.map(product => ({
-        title: product.title,
-        description: product.shortDescription || product.description.substring(0, 100) + '...',
-        price: product.price
-      })),
-      newProducts: await ProductConcept.countDocuments({
-        createdAt: {
-          $gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
-        }
-      }),
-      featuredCreators: await User.countDocuments({
-        role: 'Creator',
-        createdAt: {
-          $gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)
-        }
-      }),
-      deals: await ProductConcept.countDocuments({ isOnSale: true })
-    };
-    
-    // Send newsletter to each user
-    let emailCount = 0;
-    for (const user of users) {
-      if (user.email) {
-        try {
-          await sendWeeklyNewsletter(user, newsletterData);
-          emailCount++;
-        } catch (emailError) {
-          console.error(`Failed to send weekly newsletter to ${user.email}:`, emailError);
-        }
-      }
-    }
-    
-    console.log(`Sent weekly newsletter to ${emailCount} users.`);
-  } catch (error) {
-    console.error('Error sending weekly newsletter:', error);
-  }
-};
+// Using sendWeeklyNewsletter function imported from emailService
 
 /**
  * Clear old search history

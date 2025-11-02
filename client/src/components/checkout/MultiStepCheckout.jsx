@@ -8,7 +8,7 @@ import PaymentStep from './PaymentStep';
 import ReviewConfirmStep from './ReviewConfirmStep';
 import OrderConfirmationStep from './OrderConfirmationStep';
 import GuestCheckoutStep from './GuestCheckoutStep';
-import ProgressBar from '../common/ProgressBar';
+import ProgressBar from '../product/ProgressBar';
 
 const MultiStepCheckout = () => {
   const { isAuthenticated, currentUser } = useAuth();

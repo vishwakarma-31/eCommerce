@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { XIcon, SearchIcon } from '@heroicons/react/outline';
 import { useNavigate } from 'react-router-dom';
-import { searchService } from '../../services/searchService';
+import searchService from '../../services/searchService';
 
 const MobileSearchOverlay = ({ isOpen, onClose }) => {
   const [query, setQuery] = useState('');

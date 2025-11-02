@@ -284,7 +284,7 @@ productConceptSchema.index({ category: 1 }); // Index for category-based queries
 productConceptSchema.index({ subcategory: 1 }); // Index for subcategory-based queries
 productConceptSchema.index({ brand: 1 }); // Index for brand-based queries
 productConceptSchema.index({ status: 1 }); // Index for status-based queries
-productConceptSchema.index({ slug: 1 }, { unique: true }); // Unique index for slug lookups
+// Unique index for slug lookups is already defined with unique: true in schema definition
 productConceptSchema.index({ deadline: 1 }); // Index for deadline-based queries (cron jobs)
 productConceptSchema.index({ createdAt: -1 }); // Index for sorting by creation date
 productConceptSchema.index({ title: 'text', description: 'text', tags: 'text' }); // Text search index

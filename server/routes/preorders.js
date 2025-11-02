@@ -7,7 +7,10 @@ const {
   getPreOrderById,
   cancelPreOrder
 } = require('../controllers/preorders');
-const { protect, isBacker } = require('../middleware/auth');
+const { protect, authorize } = require('../middleware/auth');
+
+// Create role-specific middleware
+const isBacker = authorize('Backer', 'Creator', 'Admin');
 
 // POST /api/preorders/create-payment-intent - Create Stripe payment intent (protected)
 router.post('/create-payment-intent', protect, isBacker, createPaymentIntent);

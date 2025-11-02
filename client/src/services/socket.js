@@ -1,5 +1,5 @@
 import { io } from 'socket.io-client';
-import { getToken } from './api';
+// import { getToken } from './api';
 
 // Create socket connection
 let socket;
@@ -11,7 +11,7 @@ export const initializeSocket = () => {
   if (socket) return socket;
   
   // Get token from localStorage
-  const token = getToken();
+  const token = localStorage.getItem('token');
   
   if (!token) {
     console.warn('No token found, cannot initialize socket');

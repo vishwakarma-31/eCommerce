@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { productService } from '../services/productService';
-import { categoryService } from '../services/categoryService';
+import productService from '../services/productService';
+import categoryService from '../services/categoryService';
 import PullToRefresh from '../components/common/PullToRefresh';
 import MobileFilterDrawer from '../components/product/MobileFilterDrawer';
 import FilterPanel from '../components/search/FilterPanel';

@@ -1,4 +1,4 @@
-import API from './apiService';
+import API from './api';
 
 export const productService = {
   getAllProducts: (params) => API.get('/products', { params }),

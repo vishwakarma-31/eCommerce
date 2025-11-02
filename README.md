@@ -5,6 +5,27 @@ LaunchPad Market is a modern e-commerce platform with crowdfunding capabilities 
 ![Project Status](https://img.shields.io/badge/status-complete-brightgreen)
 ![License](https://img.shields.io/badge/license-MIT-blue)
 
+## Table of Contents
+- [Features](#features)
+- [Technology Stack](#technology-stack)
+- [Architecture](#architecture)
+- [Prerequisites](#prerequisites)
+- [Installation](#installation)
+- [Environment Variables](#environment-variables)
+- [Running the Application](#running-the-application)
+- [API Documentation](#api-documentation)
+- [Testing](#testing)
+- [Deployment](#deployment)
+- [Folder Structure](#folder-structure)
+- [Key Components](#key-components)
+- [Database Schema](#database-schema)
+- [Real-time Features](#real-time-features)
+- [Payment Processing](#payment-processing)
+- [Security Features](#security-features)
+- [Performance Optimizations](#performance-optimizations)
+- [License](#license)
+- [Support](#support)
+
 ## Features
 
 ### Core Features
@@ -12,7 +33,7 @@ LaunchPad Market is a modern e-commerce platform with crowdfunding capabilities 
 - **Product Management** - Create, view, and manage products with variants
 - **Crowdfunding** - Pre-order products in the funding stage with deadline tracking
 - **Marketplace** - Purchase products in production or marketplace status
-- **Shopping Cart** - Add, remove, and manage cart items with coupon support
+- **Shopping Cart** - Add, remove, and manage cart items
 - **Order Management** - Track orders and view order history with real-time updates
 - **Reviews & Ratings** - Leave reviews and ratings for products
 - **Search & Filtering** - Advanced search with filters, sorting, and autocomplete
@@ -79,50 +100,274 @@ LaunchPad Market is a modern e-commerce platform with crowdfunding capabilities 
 - **Vitest** for frontend testing
 - **Postman** for API testing
 
-## Completed Implementation Checklist
+## Architecture
 
-### Phase 1: Critical Missing Features
-- ✅ Email service with all templates
-- ✅ Image upload with Cloudinary & optimization
-- ✅ Production payment processing
-- ✅ Advanced search & filters
-- ✅ Security enhancements
+### System Architecture
+The platform follows a client-server architecture with the following components:
 
-### Phase 2: Analytics & Performance
-- ✅ Complete analytics dashboard
-- ✅ Cron jobs for automated tasks
-- ✅ Database indexing
-- ✅ Response compression
-- ✅ Frontend optimizations
+1. **Frontend Client**: React application running in the browser
+2. **Backend API**: Node.js/Express.js server providing RESTful APIs
+3. **Database**: MongoDB for data persistence
+4. **External Services**: Stripe, PayPal, Cloudinary, Email services
 
-### Phase 3: User Experience
-- ✅ Complete user dashboard
-- ✅ Wishlist functionality
-- ✅ Recently viewed products
-- ✅ Notification center
-- ✅ Multi-step checkout
+### Data Flow
+1. User interacts with React frontend
+2. Frontend makes API calls to backend
+3. Backend processes requests and interacts with database
+4. Backend returns data to frontend
+5. Frontend updates UI based on response
 
-### Phase 4: Admin Features
-- ✅ User management
-- ✅ Product management
-- ✅ Order management
-- ✅ Category management
-- ✅ Coupon management
-- ✅ Reports & exports
+## Prerequisites
 
-### Phase 5: Advanced Features
-- ✅ Product variants
-- ✅ Product comparison
-- ✅ Q&A system
-- ✅ Real-time features (Socket.io)
-- ✅ Testing (Jest, React Testing Library)
+Before you begin, ensure you have the following installed:
+- Node.js (v16 or higher)
+- npm or yarn package manager
+- Git
 
-### Phase 6: Polish & Deploy
-- ✅ Mobile optimizations
-- ✅ PWA features
-- ✅ SEO optimization
-- ✅ Documentation
-- ✅ Deployment
+Note: MongoDB installation is optional. You can use MongoDB Atlas (cloud-hosted) instead of installing MongoDB locally. See [Database Setup](DATABASE_SETUP.md) for detailed instructions.
+
+## Installation
+
+### 1. Clone the Repository
+```bash
+git clone <repository-url>
+cd launchpad-market
+```
+
+### 2. Backend Setup
+```bash
+cd server
+npm install
+
+# Create .env file
+cp .env.example .env
+# Edit .env with your configuration
+
+# For MongoDB setup options, see DATABASE_SETUP.md
+# If using local MongoDB:
+mongod
+```
+
+### 3. Frontend Setup
+```bash
+cd client
+npm install
+
+# Create .env file
+cp .env.example .env
+# Edit .env with your API URL
+```
+
+## Environment Variables
+
+### Backend (.env)
+```env
+NODE_ENV=development
+PORT=5000
+
+# Database
+# For local MongoDB:
+# MONGO_URI=mongodb://localhost:27017/launchpad-market
+# For MongoDB Atlas (see DATABASE_SETUP.md for setup instructions):
+MONGO_URI=mongodb+srv://your_username:your_password@cluster0.xxxxx.mongodb.net/launchpad-market
+
+# JWT
+JWT_SECRET=your_super_secret_jwt_key_here
+JWT_EXPIRE=24h
+
+# Stripe
+STRIPE_SECRET_KEY=sk_test_your_stripe_secret_key
+STRIPE_PUBLISHABLE_KEY=pk_test_your_stripe_publishable_key
+STRIPE_WEBHOOK_SECRET=whsec_your_webhook_secret
+
+# PayPal
+PAYPAL_MODE=sandbox
+PAYPAL_CLIENT_ID=your_paypal_client_id
+PAYPAL_CLIENT_SECRET=your_paypal_client_secret
+
+# Email (for notifications)
+EMAIL_HOST=smtp.gmail.com
+EMAIL_PORT=587
+EMAIL_USER=your_email@gmail.com
+EMAIL_PASS=your_app_password
+
+# Cloudinary (for image hosting)
+CLOUDINARY_CLOUD_NAME=your_cloudinary_cloud_name
+CLOUDINARY_API_KEY=your_cloudinary_api_key
+CLOUDINARY_API_SECRET=your_cloudinary_api_secret
+
+# Frontend URL
+CLIENT_URL=http://localhost:5173
+```
+
+### Frontend (.env)
+```env
+VITE_API_URL=http://localhost:5000/api
+VITE_STRIPE_PUBLISHABLE_KEY=pk_test_your_stripe_publishable_key
+```
+
+## Running the Application
+
+### Start Backend Server
+```bash
+cd server
+npm run dev  # Development with nodemon
+# or
+npm start    # Production
+```
+
+### Start Frontend Server
+```bash
+cd client
+npm run dev
+```
+
+### Build for Production
+```bash
+# Backend
+cd server
+npm run build
+
+# Frontend
+cd client
+npm run build
+```
+
+## API Documentation
+
+The API is documented using Postman. You can find the collection in the root directory:
+- [LaunchPad-Market-API.postman_collection.json](LaunchPad-Market-API.postman_collection.json)
+
+Key API endpoints include:
+- Authentication (`/api/auth`)
+- Users (`/api/users`)
+- Products (`/api/products`)
+- Orders (`/api/orders`)
+- Cart (`/api/cart`)
+- Reviews (`/api/reviews`)
+- Categories (`/api/categories`)
+- Creator Dashboard (`/api/creator`)
+- Admin Dashboard (`/api/admin`)
+
+## Testing
+
+The platform includes comprehensive tests:
+
+- **Backend Tests** - Unit and integration tests for all API endpoints
+- **Frontend Tests** - Component and integration tests for React components
+- **End-to-End Tests** - Cypress tests for critical user flows
+
+To run tests:
+```bash
+# Backend tests
+cd server
+npm test
+
+# Frontend tests
+cd client
+npm test
+
+# Test coverage
+npm run test:coverage
+```
+
+## Deployment
+
+### Production Deployment
+1. Set `NODE_ENV=production` in backend .env
+2. Update database connection string in `MONGO_URI`
+3. Configure production URLs for Stripe, PayPal, and email services
+4. Build frontend for production: `npm run build`
+5. Serve built files from `client/dist`
+6. Start backend server with `npm start`
+
+### Using PM2 for Production
+```bash
+cd server
+npm install -g pm2
+pm2 start ecosystem.config.js --env production
+```
+
+## Folder Structure
+
+```
+launchpad-market/
+├── client/                 # React frontend
+│   ├── public/             # Static assets
+│   ├── src/                # Source code
+│   │   ├── components/     # React components
+│   │   ├── context/        # React context providers
+│   │   ├── hooks/          # Custom hooks
+│   │   ├── pages/          # Page components
+│   │   ├── services/       # API service layer
+│   │   ├── utils/          # Utility functions
+│   │   └── App.jsx         # Main application component
+│   └── package.json        # Frontend dependencies
+├── server/                 # Node.js backend
+│   ├── controllers/        # Request handlers
+│   ├── middleware/         # Express middleware
+│   ├── models/             # Mongoose models
+│   ├── routes/             # API routes
+│   ├── services/           # Business logic
+│   ├── utils/              # Utility functions
+│   ├── emails/             # Email templates
+│   └── index.js            # Server entry point
+├── docs/                   # Documentation
+└── README.md              # Project README
+```
+
+## Key Components
+
+### User Roles
+- **Guest** - Unauthenticated users
+- **Backer** - Regular users who can purchase and back products
+- **Creator** - Users who can create and manage products and campaigns
+- **Admin** - Administrators with full platform access
+
+### Product Statuses
+- **Funding** - Product is in crowdfunding phase
+- **Successful** - Product has reached funding goal
+- **Failed** - Product did not reach funding goal
+- **InProduction** - Product is being manufactured
+- **Marketplace** - Product is available for purchase
+- **OutOfStock** - Product is temporarily unavailable
+- **Discontinued** - Product is no longer available
+
+### Order Statuses
+- **Processing** - Order is being processed
+- **Confirmed** - Order has been confirmed
+- **Shipped** - Order has been shipped
+- **Delivered** - Order has been delivered
+- **Cancelled** - Order has been cancelled
+
+## Database Schema
+
+### User Model
+- Authentication and profile information
+- Role-based access control (Backer, Creator, Admin)
+- Address management
+- Wishlist and recently viewed products
+- Following system for creators
+- Referral system
+
+### Product Concept Model
+- Product information and descriptions
+- Images and media
+- Pricing and discounts
+- Categories and tags
+- Variants (size, color, material)
+- Crowdfunding data (funding goal, deadline)
+- Reviews and ratings
+- Questions and answers
+- Analytics (views, sales, popularity)
+
+### Order Model
+- Buyer information
+- Order items and quantities
+- Payment information
+- Shipping address
+- Order and payment status tracking
+- Status history
 
 ## Real-time Features
 
@@ -150,169 +395,6 @@ The platform supports multiple payment methods:
 - Refund and cancellation handling
 - Payment status tracking
 
-For detailed information about the payment processing system, see [Payment Processing Documentation](docs/PAYMENT_PROCESSING.md).
-
-## SEO Optimization
-
-The platform includes comprehensive SEO optimization features:
-
-1. **Dynamic Meta Tags** - Page-specific titles, descriptions, and keywords
-2. **Structured Data** - JSON-LD markup for products, organization, and breadcrumbs
-3. **Performance Optimization** - Fast loading times and mobile responsiveness
-4. **Mobile-First Design** - Responsive design with PWA capabilities
-5. **Sitemap Generation** - Automatic sitemap generation for search engines
-
-For detailed information about the SEO optimization implementation, see [SEO Optimization Documentation](docs/SEO_OPTIMIZATION.md).
-
-## Analytics & Reporting
-
-The platform features a comprehensive analytics system:
-
-1. **Dashboard Metrics** - Real-time revenue, orders, users, and product metrics
-2. **Sales Analytics** - Revenue trends, category performance, and time-based analysis
-3. **Product Analytics** - View counts, review metrics, stock alerts, and rating analysis
-4. **User Analytics** - Registration trends, role distribution, and engagement metrics
-5. **Order Analytics** - Status tracking, delivery times, and payment method analysis
-6. **Data Export** - CSV and PDF export capabilities for all reports
-
-## Automated Tasks (Cron Jobs)
-
-The platform includes an extensive cron job system for automated maintenance:
-
-### Daily Tasks (Midnight)
-- Crowdfunding project deadline checking
-- Payment capture for successful projects
-- Payment cancellation for failed projects
-- Product stock status updates
-- Expired cart item clearing
-- Abandoned cart email notifications
-- Daily sales reporting
-- Old notification archiving
-
-### Hourly Tasks
-- Low stock product checking
-- Low stock alerts to admins
-- Product popularity score updates
-
-### Weekly Tasks (Sunday Midnight)
-- Weekly sales reporting
-- Newsletter distribution to subscribers
-- Old search history clearing
-
-### Monthly Tasks (1st of Month)
-- Old order archiving
-- Monthly performance reporting
-- Unused image cleanup from Cloudinary
-
-## Project Documentation
-
-Comprehensive documentation is available for all aspects of the platform:
-
-- [Project Documentation](docs/PROJECT_DOCUMENTATION.md) - Complete project overview
-- [Payment Processing](docs/PAYMENT_PROCESSING.md) - Payment system implementation
-- [SEO Optimization](docs/SEO_OPTIMIZATION.md) - Search engine optimization guide
-- [Deployment Guide](DEPLOYMENT.md) - Production deployment instructions
-
-## Deployment
-
-See [DEPLOYMENT.md](DEPLOYMENT.md) for detailed deployment instructions.
-
-## Prerequisites
-
-Before you begin, ensure you have the following installed:
-- Node.js (v16 or higher)
-- MongoDB (v5 or higher)
-- npm or yarn package manager
-- Stripe and PayPal accounts (for payment processing)
-- Git
-
-## Installation & Setup Instructions
-
-### Prerequisites
-- Node.js (v16 or higher)
-- MongoDB (v5 or higher) - Local or MongoDB Atlas
-- npm or yarn
-- Stripe and PayPal accounts (for payment processing)
-- Git
-
-### Step-by-Step Setup
-
-#### 1. Clone the Repository
-```bash
-git clone <repository-url>
-cd launchpad-market
-```
-
-#### 2. Backend Setup
-```bash
-cd server
-npm install
-
-# Create .env file
-cp .env.example .env
-# Edit .env with your configuration
-
-# Start MongoDB (if local)
-mongod
-
-# Run server
-npm run dev  # Development with nodemon
-npm start    # Production
-```
-
-#### 3. Frontend Setup
-```bash
-cd client
-npm install
-
-# Create .env file
-cp .env.example .env
-# Edit .env with your API URL
-
-# Run development server
-npm run dev
-
-# Build for production
-npm run build
-```
-
-#### 4. Database Seeding (Optional)
-```bash
-cd server
-npm run seed  # Seed sample data
-```
-
-## Testing
-
-The platform includes comprehensive tests:
-
-- **Backend Tests** - Unit and integration tests for all API endpoints
-- **Frontend Tests** - Component and integration tests for React components
-- **End-to-End Tests** - Cypress tests for critical user flows
-
-To run tests:
-```bash
-# Backend tests
-cd server
-npm test
-
-# Frontend tests
-cd client
-npm test
-
-# Test coverage
-npm run test:coverage
-```
-
-## User Roles & Permissions
-
-The platform supports multiple user roles:
-
-- **Guest** - Unauthenticated users
-- **Backer** - Regular users who can purchase and back products
-- **Creator** - Users who can create and manage products and campaigns
-- **Admin** - Administrators with full platform access
-
 ## Security Features
 
 The platform implements comprehensive security measures:
@@ -325,6 +407,7 @@ The platform implements comprehensive security measures:
 6. **Data Validation** - Express-validator for input validation
 7. **Password Security** - Bcrypt for password hashing
 8. **Session Management** - Secure session handling with timeouts
+9. **Account Lockout** - Protection against brute force attacks
 
 ## Performance Optimizations
 
@@ -336,10 +419,7 @@ The platform includes several performance optimizations:
 4. **Image Optimization** - Sharp for image processing and optimization
 5. **Code Splitting** - Efficient bundle splitting for frontend
 6. **Lazy Loading** - Component lazy loading for improved initial load times
-
-## Contributing
-
-Contributions are welcome! Please read our contributing guidelines before submitting pull requests.
+7. **Database Connection Pooling** - Efficient database connection management
 
 ## License
 

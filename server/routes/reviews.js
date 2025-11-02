@@ -7,7 +7,10 @@ const {
   deleteReview,
   markAsHelpful
 } = require('../controllers/reviews');
-const { protect, isBacker } = require('../middleware/auth');
+const { protect, authorize } = require('../middleware/auth');
+
+// Create role-specific middleware
+const isBacker = authorize('Backer', 'Creator', 'Admin');
 
 // GET /api/reviews/product/:productId - Get all reviews for a product
 router.get('/product/:productId', getProductReviews);

@@ -12,7 +12,10 @@ const {
   getAnalytics,
   generateSalesReport
 } = require('../controllers/admin');
-const { protect, isAdmin } = require('../middleware/auth');
+const { protect, authorize } = require('../middleware/auth');
+
+// Create role-specific middleware
+const isAdmin = authorize('Admin');
 
 // Apply protection middleware to all routes
 router.use(protect, isAdmin);

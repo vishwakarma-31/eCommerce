@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { Link } from 'react-router-dom';
-import { productService } from '../services/productService';
+import productService from '../services/productService';
 import { useRecentlyViewed } from '../context/RecentlyViewedContext';
 import LazyImage from '../components/common/LazyImage';
 import TouchCarousel from '../components/product/TouchCarousel';

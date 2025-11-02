@@ -1,4 +1,4 @@
-import API from './apiService';
+import API from './api';
 
 const userService = {
   // Get recently viewed products

@@ -9,7 +9,10 @@ const {
 const {
   getCreatorAnalytics
 } = require('../controllers/creatorAnalytics');
-const { protect, isCreator } = require('../middleware/auth');
+const { protect, authorize } = require('../middleware/auth');
+
+// Create role-specific middleware
+const isCreator = authorize('Creator', 'Admin');
 
 // GET /api/creator/dashboard - Get creator dashboard overview (Creator only)
 router.get('/dashboard', protect, isCreator, getDashboard);

@@ -11,7 +11,7 @@ let fallbackTransporter = null;
 const initializeTransporters = () => {
   try {
     // Primary transporter - Gmail SMTP
-    transporter = nodemailer.createTransporter({
+    transporter = nodemailer.createTransport({
       host: process.env.EMAIL_HOST || 'smtp.gmail.com',
       port: process.env.EMAIL_PORT || 587,
       secure: false, // true for 465, false for other ports
@@ -23,7 +23,7 @@ const initializeTransporters = () => {
 
     // Fallback transporter - SendGrid SMTP
     if (process.env.FALLBACK_EMAIL_HOST) {
-      fallbackTransporter = nodemailer.createTransporter({
+      fallbackTransporter = nodemailer.createTransport({
         host: process.env.FALLBACK_EMAIL_HOST,
         port: process.env.FALLBACK_EMAIL_PORT || 587,
         secure: false,

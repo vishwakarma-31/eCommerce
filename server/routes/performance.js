@@ -1,14 +1,17 @@
 const express = require('express');
 const router = express.Router();
 const { performanceMonitor } = require('../utils/performanceMonitor');
-const { protect, admin } = require('../middleware/auth');
+const { protect, authorize } = require('../middleware/auth');
+
+// Create role-specific middleware
+const isAdmin = authorize('Admin');
 
 /**
  * @route   GET /api/performance/metrics
  * @desc    Get performance metrics
  * @access  Admin
  */
-router.get('/metrics', protect, admin, (req, res) => {
+router.get('/metrics', protect, isAdmin, (req, res) => {
   try {
     const metrics = performanceMonitor.getMetrics();
     res.json({
@@ -28,7 +31,7 @@ router.get('/metrics', protect, admin, (req, res) => {
  * @desc    Reset performance metrics
  * @access  Admin
  */
-router.post('/reset', protect, admin, (req, res) => {
+router.post('/reset', protect, isAdmin, (req, res) => {
   try {
     performanceMonitor.resetMetrics();
     res.json({

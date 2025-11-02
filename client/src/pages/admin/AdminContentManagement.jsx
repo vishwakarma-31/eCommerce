@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import Loader from '../../components/common/Loader';
 import Button from '../../components/common/Button';
-import { adminService } from '../../services/adminService';
+import adminService from '../../services/adminService';
 
 const AdminContentManagement = () => {
   const { currentUser, isAuthenticated } = useAuth();

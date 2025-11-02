@@ -7,7 +7,10 @@ const {
   updateCategory,
   deleteCategory
 } = require('../controllers/categories');
-const { protect, isAdmin } = require('../middleware/auth');
+const { protect, authorize } = require('../middleware/auth');
+
+// Create role-specific middleware
+const isAdmin = authorize('Admin');
 
 // GET /api/categories/ - Get all categories
 router.get('/', getCategories);

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
-import { productService } from '../services/productService';
+import productService from '../services/productService';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
 import { useWishlist } from '../context/WishlistContext';
@@ -9,7 +9,7 @@ import { useRecentlyViewed } from '../context/RecentlyViewedContext';
 import { useComparison } from '../context/ComparisonContext';
 import { toast } from 'react-toastify';
 import LazyImage from '../components/common/LazyImage';
-import ProductQA from '../components/product/ProductQA';
+import ProductQA from '../components/product/ProductQ&A';
 import ProductReviews from '../components/product/ProductReviews';
 import RelatedProducts from '../components/product/RelatedProducts';
 import StickyAddToCart from '../components/product/StickyAddToCart';

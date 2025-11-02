@@ -195,7 +195,7 @@ userSchema.methods.resetLoginAttempts = function() {
 };
 
 // Add indexes for frequently queried fields
-userSchema.index({ email: 1 }); // Critical index for login/registration
+// Email index is already defined with unique: true in schema definition
 userSchema.index({ role: 1 }); // Critical index for role-based queries
 userSchema.index({ emailVerificationToken: 1 }); // Index for email verification
 userSchema.index({ lockUntil: 1 }); // Index for lockout checks
