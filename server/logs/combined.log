@@ -102,3 +102,7 @@
 {"level":"info","message":"All cron jobs started","service":"launchpad-market","timestamp":"2025-11-27T03:57:43.316Z"}
 {"level":"info","message":"Socket.io initialized","service":"launchpad-market","timestamp":"2025-11-27T03:57:43.322Z"}
 {"level":"info","message":"HTTP Server running on port 5000","service":"launchpad-market","timestamp":"2025-11-27T03:57:43.323Z"}
+{"level":"info","message":"Connected to MongoDB","service":"launchpad-market","timestamp":"2025-11-27T04:15:07.549Z"}
+{"level":"info","message":"All cron jobs started","service":"launchpad-market","timestamp":"2025-11-27T04:15:07.580Z"}
+{"level":"info","message":"Socket.io initialized","service":"launchpad-market","timestamp":"2025-11-27T04:15:07.584Z"}
+{"level":"info","message":"HTTP Server running on port 5000","service":"launchpad-market","timestamp":"2025-11-27T04:15:07.584Z"}

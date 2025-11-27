@@ -2,8 +2,6 @@ const CACHE_NAME = 'launchpad-market-v1.0.0';
 const urlsToCache = [
   '/',
   '/index.html',
-  '/static/css/main.css',
-  '/static/js/main.js',
   '/icons/icon-192x192.png',
   '/icons/icon-512x512.png'
 ];
@@ -51,11 +49,14 @@ self.addEventListener('fetch', (event) => {
               
             return response;
           })
-          .catch(() => {
+          .catch((error) => {
+            console.error('Fetch failed:', error);
             // If fetch fails and it's a navigation request, return the offline page
             if (event.request.mode === 'navigate') {
               return caches.match('/offline.html');
             }
+            // For other requests, re-throw the error
+            throw error;
           });
       })
   );

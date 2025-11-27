@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { useNotification } from '../context/NotificationContext';
+import { useNotifications } from '../context/NotificationContext';
 import Loader from '../components/common/Loader';
 import Button from '../components/common/Button';
 
 const NotificationsPage = () => {
   const { user } = useAuth();
-  const { notifications, markAsRead, markAllAsRead, clearAll } = useNotification();
+  const { notifications, markAsRead, markAllAsRead, clearAll } = useNotifications();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
 

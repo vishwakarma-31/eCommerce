@@ -1,4 +1,4 @@
-@echo off
+1@echo off
 echo LaunchPad Market - Setup Script
 echo ===============================
 echo.

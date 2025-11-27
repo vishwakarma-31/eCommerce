@@ -1,6 +1,7 @@
 import React, { createContext, useState, useEffect, useContext } from 'react';
 import authService from '../services/authService';
 import userService from '../services/userService';
+import Loader from '../components/common/Loader';
 
 // Create the context
 const AuthContext = createContext();
@@ -44,9 +45,12 @@ export const AuthProvider = ({ children }) => {
         localStorage.removeItem('user');
         setToken(null);
         setIsAuthenticated(false);
+      } finally {
+        setLoading(false);
       }
+    } else {
+      setLoading(false);
     }
-    setLoading(false);
   }, []);
 
   const login = async (email, password) => {
@@ -191,9 +195,11 @@ export const AuthProvider = ({ children }) => {
     loading
   };
 
+  if (loading) return <div className="flex justify-center items-center h-screen"><Loader /></div>;
+  
   return (
     <AuthContext.Provider value={value}>
-      {!loading && children}
+      {children}
     </AuthContext.Provider>
   );
 };
