@@ -6,7 +6,6 @@ const Cart = require('../models/Cart');
 const Order = require('../models/Order');
 const Search = require('../models/Search');
 const Notification = require('../models/Notification');
-const { captureAllPreOrderPayments, cancelAllPreOrderPayments } = require('./paymentService');
 const { 
   sendProjectFundedEmail, 
   sendProjectFailedEmail,
@@ -20,8 +19,8 @@ const analyticsService = require('./analyticsService');
 /**
  * Automated Deadline Checker
  * Runs daily at midnight to check for expired crowdfunding projects
- * For successful projects, captures all authorized payments
- * For failed projects, cancels all authorized payments
+ * For successful projects, moves them to production
+ * For failed projects, marks them as failed
  */
 const startDeadlineChecker = async () => {
   try {
@@ -39,9 +38,8 @@ const startDeadlineChecker = async () => {
       const backers = await User.find({ backedProjects: project._id });
       
       if (project.currentFunding >= project.fundingGoal) {
-        // SUCCESS: Capture all authorized payments
-        project.status = 'Successful';
-        await captureAllPreOrderPayments(project._id);
+        // SUCCESS: Move project to production
+        project.status = 'InProduction';
         
         // Send success emails to creator and backers
         try {
@@ -49,13 +47,9 @@ const startDeadlineChecker = async () => {
         } catch (emailError) {
           console.error('Failed to send project funded emails:', emailError);
         }
-        
-        // Update status to 'InProduction'
-        project.status = 'InProduction';
       } else {
-        // FAILED: Cancel all payment intents
+        // FAILED: Mark project as failed
         project.status = 'Failed';
-        await cancelAllPreOrderPayments(project._id);
         
         // Send failure emails to creator and backers
         try {
@@ -79,11 +73,11 @@ const startDeadlineChecker = async () => {
  */
 const captureSuccessfulProjectPayments = async () => {
   try {
-    console.log('Capturing payments for successful projects...');
+    console.log('Processing successful projects...');
     // This is already handled in startDeadlineChecker
-    console.log('Payment capture process completed.');
+    console.log('Project processing completed.');
   } catch (error) {
-    console.error('Error capturing payments:', error);
+    console.error('Error processing projects:', error);
   }
 };
 
@@ -93,11 +87,11 @@ const captureSuccessfulProjectPayments = async () => {
  */
 const cancelFailedProjectPayments = async () => {
   try {
-    console.log('Canceling payments for failed projects...');
+    console.log('Processing failed projects...');
     // This is already handled in startDeadlineChecker
-    console.log('Payment cancellation process completed.');
+    console.log('Project processing completed.');
   } catch (error) {
-    console.error('Error canceling payments:', error);
+    console.error('Error processing projects:', error);
   }
 };
 

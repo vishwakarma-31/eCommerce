@@ -28,24 +28,6 @@ const orderSchema = new mongoose.Schema({
     type: Number,
     required: true
   },
-  paymentMethod: {
-    type: String,
-    required: true,
-    enum: ['card', 'paypal', 'cod']
-  },
-  stripePaymentIntentId: {
-    type: String,
-    required: false
-  },
-  paypalPaymentId: {
-    type: String,
-    required: false
-  },
-  paymentStatus: {
-    type: String,
-    enum: ['Pending', 'Completed', 'Failed', 'Refunded'],
-    default: 'Pending'
-  },
   orderStatus: {
     type: String,
     enum: ['Processing', 'Confirmed', 'Shipped', 'Delivered', 'Cancelled'],

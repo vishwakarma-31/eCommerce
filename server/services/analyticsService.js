@@ -515,12 +515,13 @@ class AnalyticsService {
         }
       ]);
       
-      // Average delivery time
+      // Average delivery time calculation
       const avgDeliveryTimeResult = await Order.aggregate([
         {
           $match: {
             orderStatus: 'Delivered',
-            deliveredAt: { $exists: true }
+            deliveredAt: { $exists: true },
+            createdAt: { $exists: true }
           }
         },
         {
@@ -544,31 +545,14 @@ class AnalyticsService {
       const avgDeliveryTime = avgDeliveryTimeResult.length > 0 ? 
         avgDeliveryTimeResult[0].avgDeliveryTime : 0;
       
-      // Orders by payment method
-      const ordersByPaymentMethod = await Order.aggregate([
-        {
-          $group: {
-            _id: '$paymentMethod',
-            count: { $sum: 1 }
-          }
-        }
-      ]);
-      
       // Cancelled orders analysis
       const cancelledOrders = await Order.find({ orderStatus: 'Cancelled' })
         .select('totalAmount createdAt');
       
-      // Return/refund rate
-      const refundedOrders = await Order.countDocuments({ paymentStatus: 'Refunded' });
-      const totalOrders = await Order.countDocuments();
-      const refundRate = totalOrders > 0 ? (refundedOrders / totalOrders) * 100 : 0;
-      
       return {
         ordersByStatus,
         avgDeliveryTime,
-        ordersByPaymentMethod,
-        cancelledOrders,
-        refundRate
+        cancelledOrders
       };
     } catch (error) {
       console.error('Error getting order analytics:', error);
@@ -604,11 +588,6 @@ class AnalyticsService {
       }
       
       const revenueBreakdown = await Order.aggregate([
-        {
-          $match: {
-            paymentStatus: 'Completed'
-          }
-        },
         {
           $group: {
             _id: groupBy,

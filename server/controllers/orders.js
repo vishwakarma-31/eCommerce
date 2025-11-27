@@ -1,88 +1,17 @@
-const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const Order = require('../models/Order');
 const ProductConcept = require('../models/ProductConcept');
 const User = require('../models/User');
 const { protect, isBacker } = require('../middleware/auth');
 const { sendOrderConfirmationEmail } = require('../services/emailService');
-const { processPayment, refundOrderPayment } = require('../services/paymentService');
 const PDFDocument = require('pdfkit');
 const logger = require('../utils/logger');
 
-// Create payment for marketplace order
-const createPayment = async (req, res) => {
-  try {
-    const { items, paymentMethod } = req.body;
-    
-    // Calculate total amount
-    let totalAmount = 0;
-    
-    // Validate items and calculate total
-    for (const item of items) {
-      const product = await ProductConcept.findById(item.product);
-      if (!product) {
-        return res.status(404).json({ message: `Product with ID ${item.product} not found` });
-      }
-      
-      if (product.status !== 'Marketplace') {
-        return res.status(400).json({ message: `Product ${product.title} is not available for purchase` });
-      }
-      
-      if (product.stockQuantity < item.quantity) {
-        return res.status(400).json({ message: `Insufficient stock for ${product.title}` });
-      }
-      
-      totalAmount += product.price * item.quantity;
-    }
-    
-    // Process payment based on selected method
-    let paymentResult;
-    
-    switch (paymentMethod) {
-      case 'card':
-        // Create a Stripe payment intent with automatic capture for marketplace orders
-        paymentResult = await stripe.paymentIntents.create({
-          amount: Math.round(totalAmount * 100), // Convert to cents
-          currency: 'usd',
-          capture_method: 'automatic', // Capture immediately for marketplace orders
-          metadata: {
-            userId: req.user._id.toString()
-          }
-        });
-        break;
-        
-      case 'paypal':
-        // For PayPal, we'll return a URL for redirect
-        // In a real implementation, you would create a PayPal payment and return the approval URL
-        return res.status(200).json({
-          paymentMethod: 'paypal',
-          message: 'Redirect to PayPal for payment'
-        });
-        
-      case 'cod':
-        // For Cash on Delivery, no payment processing is needed at this stage
-        return res.status(200).json({
-          paymentMethod: 'cod',
-          message: 'Order will be processed with Cash on Delivery'
-        });
-        
-      default:
-        return res.status(400).json({ message: 'Invalid payment method' });
-    }
-    
-    res.status(200).json({
-      clientSecret: paymentResult.client_secret,
-      paymentMethod: 'card'
-    });
-  } catch (error) {
-    logger.error('Error creating payment intent:', error);
-    res.status(500).json({ message: error.message });
-  }
-};
+
 
 // Create new order
 const createOrder = async (req, res) => {
   try {
-    const { items, paymentMethod, stripePaymentIntentId, paypalPaymentId, shippingAddress } = req.body;
+    const { items, shippingAddress } = req.body;
     
     // Calculate total amount
     let totalAmount = 0;
@@ -106,30 +35,11 @@ const createOrder = async (req, res) => {
       totalAmount += product.price * item.quantity;
     }
     
-    // Verify payment based on payment method
-    if (paymentMethod === 'card' && stripePaymentIntentId) {
-      // Verify the payment intent belongs to this user
-      const paymentIntent = await stripe.paymentIntents.retrieve(stripePaymentIntentId);
-      if (paymentIntent.metadata.userId !== req.user._id.toString() || 
-          paymentIntent.status !== 'succeeded') {
-        return res.status(400).json({ message: 'Invalid or unsuccessful payment intent' });
-      }
-    } else if (paymentMethod === 'paypal' && paypalPaymentId) {
-      // In a real implementation, you would verify the PayPal payment
-      // For now, we'll assume it's valid
-    } else if (paymentMethod !== 'cod') {
-      return res.status(400).json({ message: 'Invalid payment method or missing payment ID' });
-    }
-    
     // Create order
     const order = new Order({
       buyer: req.user._id,
       items,
       totalAmount,
-      paymentMethod,
-      stripePaymentIntentId: paymentMethod === 'card' ? stripePaymentIntentId : undefined,
-      paypalPaymentId: paymentMethod === 'paypal' ? paypalPaymentId : undefined,
-      paymentStatus: paymentMethod === 'cod' ? 'Pending' : 'Completed', // Set initial payment status
       orderStatus: 'Processing', // Set initial order status
       shippingAddress
     });
@@ -230,16 +140,6 @@ const cancelOrder = async (req, res) => {
     // Check if order can be cancelled (must be in Processing status)
     if (order.orderStatus !== 'Processing') {
       return res.status(400).json({ message: 'Order cannot be cancelled' });
-    }
-    
-    // If payment was made via Stripe, refund the payment
-    if (order.paymentMethod === 'card' && order.stripePaymentIntentId) {
-      try {
-        await refundOrderPayment(order._id);
-      } catch (refundError) {
-        logger.error('Error refunding payment:', refundError);
-        return res.status(500).json({ message: 'Error processing refund' });
-      }
     }
     
     // Update order status
@@ -426,7 +326,6 @@ const getOrdersWithFilters = async (req, res) => {
 };
 
 module.exports = {
-  createPayment,
   createOrder,
   getMyOrders,
   getOrderById,

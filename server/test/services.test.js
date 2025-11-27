@@ -6,7 +6,6 @@ const ProductConcept = require('./models/ProductConcept');
 const PreOrder = require('./models/PreOrder');
 
 // Import services
-const { captureAllPreOrderPayments, cancelAllPreOrderPayments } = require('./services/paymentService');
 const RecommendationEngine = require('./services/recommendationService');
 const AnalyticsService = require('./services/analyticsService');
 
@@ -33,12 +32,6 @@ mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/launchpad
     console.log('Testing recommendation engine...');
     const trending = await RecommendationEngine.getTrendingProducts(3);
     console.log('Trending products:', trending.map(p => p.title));
-    
-    // Test payment service functions (without actually calling Stripe)
-    console.log('Payment service functions are available:');
-    console.log('- captureAllPreOrderPayments');
-    console.log('- cancelAllPreOrderPayments');
-    console.log('- refundPreOrderPayment');
     
     console.log('All services tested successfully!');
     

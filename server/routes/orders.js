@@ -1,7 +1,6 @@
 const express = require('express');
 const router = express.Router();
 const {
-  createPayment,
   createOrder,
   getMyOrders,
   getOrderById,
@@ -12,9 +11,6 @@ const { protect, authorize } = require('../middleware/auth');
 
 // Create role-specific middleware
 const isBacker = authorize('Backer', 'Creator', 'Admin');
-
-// POST /api/orders/create-payment - Create payment for marketplace order (protected)
-router.post('/create-payment', protect, isBacker, createPayment);
 
 // POST /api/orders/ - Create new order (protected)
 router.post('/', protect, isBacker, createOrder);

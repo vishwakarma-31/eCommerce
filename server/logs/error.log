@@ -46,3 +46,7 @@
 {"level":"error","message":"Please check your MONGO_URI in the .env file. For MongoDB Atlas, make sure to replace the placeholder credentials with your actual MongoDB Atlas credentials.","service":"launchpad-market","timestamp":"2025-10-27T21:55:23.289Z"}
 {"level":"error","message":"Connection error","service":"launchpad-market","timestamp":"2025-10-28T14:00:27.306Z"}
 {"level":"error","message":"Please check your MONGO_URI in the .env file. For MongoDB Atlas, make sure to replace the placeholder credentials with your actual MongoDB Atlas credentials.","service":"launchpad-market","timestamp":"2025-10-28T14:00:27.309Z"}
+{"level":"error","message":"Connection error","service":"launchpad-market","timestamp":"2025-11-26T16:29:43.216Z"}
+{"level":"error","message":"Please check your MONGO_URI in the .env file. For MongoDB Atlas, make sure to replace the placeholder credentials with your actual MongoDB Atlas credentials.","service":"launchpad-market","timestamp":"2025-11-26T16:29:43.218Z"}
+{"level":"error","message":"Connection error","service":"launchpad-market","timestamp":"2025-11-26T16:31:17.012Z"}
+{"level":"error","message":"Please check your MONGO_URI in the .env file. For MongoDB Atlas, make sure to replace the placeholder credentials with your actual MongoDB Atlas credentials.","service":"launchpad-market","timestamp":"2025-11-26T16:31:17.014Z"}

@@ -13,8 +13,6 @@ const commentRoutes = require('./comments');
 const categoryRoutes = require('./categories');
 const creatorRoutes = require('./creator');
 const adminRoutes = require('./admin');
-const stripeRoutes = require('./stripe');
-const paypalRoutes = require('./paypal');
 
 // Use all routes
 router.use('/auth', authRoutes);
@@ -28,7 +26,5 @@ router.use('/comments', commentRoutes);
 router.use('/categories', categoryRoutes);
 router.use('/creator', creatorRoutes);
 router.use('/admin', adminRoutes);
-router.use('/stripe', stripeRoutes);
-router.use('/paypal', paypalRoutes);
 
 module.exports = router;

@@ -202,8 +202,8 @@ const getAnalytics = async (req, res) => {
     const totalPreOrders = await PreOrder.countDocuments();
     
     // Get sales data (simplified)
-    const orders = await Order.find({ paymentStatus: 'Completed' });
-    const preOrders = await PreOrder.find({ status: 'Paid' });
+    const orders = await Order.find();
+    const preOrders = await PreOrder.find({ status: 'Authorized' });
     
     const totalRevenue = 
       orders.reduce((sum, order) => sum + order.totalAmount, 0) +
@@ -230,14 +230,13 @@ const generateSalesReport = async (req, res) => {
     
     // Get orders in date range
     const orders = await Order.find({
-      createdAt: { $gte: startDate, $lte: endDate },
-      paymentStatus: 'Completed'
+      createdAt: { $gte: startDate, $lte: endDate }
     });
     
     // Get pre-orders in date range
     const preOrders = await PreOrder.find({
       createdAt: { $gte: startDate, $lte: endDate },
-      status: 'Paid'
+      status: 'Authorized'
     });
     
     // Calculate report data

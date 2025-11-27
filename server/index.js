@@ -41,7 +41,6 @@ const categoryRoutes = require('./routes/categories');
 const creatorRoutes = require('./routes/creator');
 const adminRoutes = require('./routes/admin');
 const analyticsRoutes = require('./routes/analytics');
-const stripeRoutes = require('./routes/stripe');
 const notificationRoutes = require('./routes/notifications');
 const followingRoutes = require('./routes/following');
 const referralRoutes = require('./routes/referral');
@@ -185,7 +184,6 @@ app.use('/api/admin', adminRoutes);
 app.use('/api/admin/moderation', moderationRoutes); // Add moderation routes
 app.use('/api', analyticsRoutes);
 app.use('/api/metrics', successMetricsRoutes); // Add success metrics routes
-app.use('/api/stripe', stripeRoutes);
 app.use('/api/notifications', notificationRoutes);
 app.use('/api/following', followingRoutes);
 app.use('/api/referral', referralRoutes);
@@ -218,6 +216,17 @@ if (process.env.NODE_ENV === 'development') {
       console.error('Error testing cron jobs:', error);
       res.status(500).json({ status: 'ERROR', message: 'Failed to execute cron jobs', error: error.message });
     }
+  });
+}
+
+// Serve static files in production
+if (process.env.NODE_ENV === 'production') {
+  // Serve static files from the React app build directory
+  app.use(express.static(path.join(__dirname, '../client/dist')));
+  
+  // Catch-all handler for React Router
+  app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, '../client/dist/index.html'));
   });
 }
 

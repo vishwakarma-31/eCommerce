@@ -1,51 +1,11 @@
-const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const PreOrder = require('../models/PreOrder');
 const ProductConcept = require('../models/ProductConcept');
 const { protect, isBacker } = require('../middleware/auth');
 
-// Create Stripe payment intent
-const createPaymentIntent = async (req, res) => {
-  try {
-    const { productConceptId, quantity } = req.body;
-    
-    // Validate product exists and is in funding status
-    const product = await ProductConcept.findById(productConceptId);
-    if (!product) {
-      return res.status(404).json({ message: 'Product not found' });
-    }
-    
-    if (product.status !== 'Funding') {
-      return res.status(400).json({ message: 'Product is not in funding stage' });
-    }
-    
-    // Calculate total amount (in cents for Stripe)
-    const totalAmount = Math.round(product.price * quantity * 100);
-    
-    // Create a Stripe payment intent with manual capture
-    const paymentIntent = await stripe.paymentIntents.create({
-      amount: totalAmount,
-      currency: 'usd',
-      capture_method: 'manual', // For pre-orders, we capture manually after funding success
-      metadata: {
-        productConceptId: productConceptId,
-        userId: req.user._id.toString(),
-        quantity: quantity.toString()
-      }
-    });
-    
-    res.status(200).json({
-      clientSecret: paymentIntent.client_secret
-    });
-  } catch (error) {
-    console.error('Error creating payment intent:', error);
-    res.status(500).json({ message: error.message });
-  }
-};
-
 // Create new pre-order
 const createPreOrder = async (req, res) => {
   try {
-    const { productConceptId, quantity, stripePaymentIntentId, shippingAddress } = req.body;
+    const { productConceptId, quantity, shippingAddress } = req.body;
     
     // Validate product exists and is in funding status
     const product = await ProductConcept.findById(productConceptId);
@@ -55,13 +15,6 @@ const createPreOrder = async (req, res) => {
     
     if (product.status !== 'Funding') {
       return res.status(400).json({ message: 'Product is not in funding stage' });
-    }
-    
-    // Verify the payment intent belongs to this user and product
-    const paymentIntent = await stripe.paymentIntents.retrieve(stripePaymentIntentId);
-    if (paymentIntent.metadata.productConceptId !== productConceptId ||
-        paymentIntent.metadata.userId !== req.user._id.toString()) {
-      return res.status(400).json({ message: 'Invalid payment intent' });
     }
     
     // Calculate total amount
@@ -73,7 +26,6 @@ const createPreOrder = async (req, res) => {
       productConcept: productConceptId,
       quantity,
       totalPrice: totalAmount,
-      stripePaymentIntentId,
       status: 'Authorized', // Set initial status to Authorized
       shippingAddress
     });
@@ -144,9 +96,6 @@ const cancelPreOrder = async (req, res) => {
       return res.status(400).json({ message: 'Pre-order cannot be cancelled' });
     }
     
-    // Cancel the payment intent with Stripe
-    await stripe.paymentIntents.cancel(preOrder.stripePaymentIntentId);
-    
     // Update pre-order status
     preOrder.status = 'Cancelled';
     await preOrder.save();
@@ -166,7 +115,6 @@ const cancelPreOrder = async (req, res) => {
 };
 
 module.exports = {
-  createPaymentIntent,
   createPreOrder,
   getMyPreOrders,
   getPreOrderById,

@@ -125,7 +125,6 @@ describe('Orders API', () => {
           postalCode: '12345',
           country: 'Test Country'
         },
-        paymentMethod: 'Credit Card',
         itemsPrice: 199.98,
         shippingPrice: 10.00,
         taxPrice: 15.00,
@@ -163,7 +162,6 @@ describe('Orders API', () => {
           postalCode: '12345',
           country: 'Test Country'
         },
-        paymentMethod: 'Credit Card',
         itemsPrice: 99.99,
         shippingPrice: 10.00,
         taxPrice: 15.00,
@@ -194,7 +192,6 @@ describe('Orders API', () => {
           postalCode: '12345',
           country: 'Test Country'
         },
-        paymentMethod: 'Credit Card',
         itemsPrice: 1499.85,
         shippingPrice: 10.00,
         taxPrice: 15.00,
@@ -232,7 +229,6 @@ describe('Orders API', () => {
           postalCode: '12345',
           country: 'Test Country'
         },
-        paymentMethod: 'Credit Card',
         itemsPrice: 99.99,
         shippingPrice: 10.00,
         taxPrice: 15.00,
@@ -313,7 +309,6 @@ describe('Orders API', () => {
           postalCode: '12345',
           country: 'Test Country'
         },
-        paymentMethod: 'Credit Card',
         itemsPrice: 99.99,
         shippingPrice: 10.00,
         taxPrice: 15.00,
@@ -375,7 +370,6 @@ describe('Orders API', () => {
           postalCode: '12345',
           country: 'Test Country'
         },
-        paymentMethod: 'Credit Card',
         itemsPrice: 99.99,
         shippingPrice: 10.00,
         taxPrice: 15.00,

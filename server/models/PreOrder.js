@@ -20,13 +20,9 @@ const preOrderSchema = new mongoose.Schema({
     type: Number,
     required: true
   },
-  stripePaymentIntentId: {
-    type: String,
-    required: true
-  },
   status: {
     type: String,
-    enum: ['Authorized', 'Paid', 'Cancelled', 'Refunded'],
+    enum: ['Authorized', 'Cancelled'],
     default: 'Authorized'
   },
   shippingAddress: {
