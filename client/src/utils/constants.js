@@ -50,14 +50,6 @@ export const PREORDER_STATUSES = {
   REFUNDED: 'Refunded'
 };
 
-// Payment Methods
-export const PAYMENT_METHODS = {
-  CREDIT_CARD: 'Credit Card',
-  DEBIT_CARD: 'Debit Card',
-  PAYPAL: 'PayPal',
-  STRIPE: 'Stripe'
-};
-
 // Sort Options
 export const SORT_OPTIONS = {
   CREATED_AT: 'createdAt',

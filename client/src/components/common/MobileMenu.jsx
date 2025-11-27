@@ -1,179 +1,161 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import { useCart } from '../../context/CartContext';
-import { XIcon } from '@heroicons/react/outline';
 
-const MobileMenu = ({ isOpen, onClose }) => {
-  const { currentUser, isAuthenticated, logout } = useAuth();
-  const { cartCount } = useCart();
+const MobileMenu = () => {
+  const [isOpen, setIsOpen] = useState(false);
+  const { user, logout } = useAuth();
+
+  const toggleMenu = () => {
+    setIsOpen(!isOpen);
+  };
 
   const handleLogout = () => {
     logout();
-    onClose();
+    setIsOpen(false);
   };
 
-  if (!isOpen) return null;
-
   return (
-    <div className="fixed inset-0 z-50 md:hidden">
-      {/* Backdrop */}
-      <div 
-        className="fixed inset-0 bg-black bg-opacity-50 transition-opacity"
-        onClick={onClose}
-      />
-      
-      {/* Slide-over menu */}
-      <div className="fixed inset-y-0 right-0 max-w-full flex">
-        <div className="relative w-screen max-w-xs">
-          <div className="h-full flex flex-col bg-white shadow-xl">
-            {/* Header */}
-            <div className="px-4 py-6 bg-gray-50 sm:px-6">
-              <div className="flex items-center justify-between">
-                <h2 className="text-lg font-medium text-gray-900">Menu</h2>
+    <div className="md:hidden">
+      {/* Mobile menu button */}
+      <button
+        onClick={toggleMenu}
+        className="fixed top-4 right-4 z-50 p-2 rounded-md text-gray-700 hover:text-gray-900 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-500"
+      >
+        <span className="sr-only">Open main menu</span>
+        {isOpen ? (
+          <svg className="block h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        ) : (
+          <svg className="block h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+          </svg>
+        )}
+      </button>
+
+      {/* Mobile menu panel */}
+      {isOpen && (
+        <div className="fixed inset-0 z-40">
+          <div 
+            className="fixed inset-0 bg-black bg-opacity-25"
+            onClick={toggleMenu}
+          ></div>
+          
+          <div className="relative bg-white h-full w-64 max-w-sm ml-auto overflow-y-auto">
+            <div className="pt-5 pb-6">
+              <div className="flex items-center justify-between px-4">
+                <div>
+                  <span className="text-2xl font-bold text-indigo-600">LaunchPad</span>
+                  <span className="text-2xl font-bold text-gray-900">Market</span>
+                </div>
                 <button
-                  type="button"
-                  className="text-gray-400 hover:text-gray-500"
-                  onClick={onClose}
+                  onClick={toggleMenu}
+                  className="p-2 rounded-md text-gray-700 hover:text-gray-900 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-500"
                 >
-                  <XIcon className="h-6 w-6" />
+                  <span className="sr-only">Close menu</span>
+                  <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
                 </button>
               </div>
-            </div>
-            
-            {/* Navigation */}
-            <div className="flex-1 overflow-y-auto">
-              <nav className="px-4 py-6 space-y-1">
-                <Link
-                  to="/"
-                  className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50"
-                  onClick={onClose}
-                >
-                  Home
-                </Link>
-                <Link
-                  to="/products"
-                  className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50"
-                  onClick={onClose}
-                >
-                  Products
-                </Link>
-                
-                {isAuthenticated && currentUser && (
-                  <>
-                    <Link
-                      to="/cart"
-                      className="flex items-center px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50"
-                      onClick={onClose}
-                    >
-                      Cart
-                      {cartCount > 0 && (
-                        <span className="ml-2 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white bg-red-500 rounded-full">
-                          {cartCount}
-                        </span>
-                      )}
-                    </Link>
-                    <Link
-                      to="/wishlist"
-                      className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50"
-                      onClick={onClose}
-                    >
-                      Wishlist
-                    </Link>
-                    <Link
-                      to="/profile"
-                      className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50"
-                      onClick={onClose}
-                    >
-                      Profile
-                    </Link>
-                    <Link
-                      to="/orders"
-                      className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50"
-                      onClick={onClose}
-                    >
-                      My Orders
-                    </Link>
-                    
-                    {currentUser.role === 'Creator' && (
-                      <Link
-                        to="/creator/dashboard"
-                        className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50"
-                        onClick={onClose}
-                      >
-                        Creator Dashboard
-                      </Link>
-                    )}
-                    
-                    {currentUser.role === 'Admin' && (
-                      <Link
-                        to="/admin/dashboard"
-                        className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50"
-                        onClick={onClose}
-                      >
-                        Admin Dashboard
-                      </Link>
-                    )}
-                  </>
-                )}
-                
-                {!isAuthenticated && (
-                  <>
-                    <Link
-                      to="/login"
-                      className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50"
-                      onClick={onClose}
-                    >
-                      Login
-                    </Link>
-                    <Link
-                      to="/register"
-                      className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50"
-                      onClick={onClose}
-                    >
-                      Register
-                    </Link>
-                  </>
-                )}
-              </nav>
-            </div>
-            
-            {/* Footer */}
-            <div className="border-t border-gray-200 py-6 px-4">
-              {isAuthenticated ? (
-                <div className="flex flex-col space-y-4">
-                  <div className="text-sm text-gray-500">
-                    Hello, {currentUser?.name}
-                  </div>
-                  <button
-                    onClick={handleLogout}
-                    className="w-full flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-indigo-600 hover:bg-indigo-700"
-                  >
-                    Logout
-                  </button>
-                </div>
-              ) : (
-                <div className="flex space-x-4">
+              
+              <div className="mt-6 px-4">
+                <nav className="space-y-1">
                   <Link
-                    to="/login"
-                    className="flex-1 flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-indigo-600 hover:bg-indigo-700"
-                    onClick={onClose}
+                    to="/"
+                    className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50"
+                    onClick={toggleMenu}
                   >
-                    Login
+                    Home
                   </Link>
                   <Link
-                    to="/register"
-                    className="flex-1 flex items-center justify-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-base font-medium text-gray-700 bg-white hover:bg-gray-50"
-                    onClick={onClose}
+                    to="/products"
+                    className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50"
+                    onClick={toggleMenu}
                   >
-                    Register
+                    Products
                   </Link>
-                </div>
-              )}
+                  <Link
+                    to="/creators"
+                    className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50"
+                    onClick={toggleMenu}
+                  >
+                    Creators
+                  </Link>
+                  <Link
+                    to="/campaigns"
+                    className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50"
+                    onClick={toggleMenu}
+                  >
+                    Campaigns
+                  </Link>
+                  <Link
+                    to="/compare"
+                    className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50"
+                    onClick={toggleMenu}
+                  >
+                    Compare
+                  </Link>
+                  <Link
+                    to="/wishlist"
+                    className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50"
+                    onClick={toggleMenu}
+                  >
+                    Wishlist
+                  </Link>
+                </nav>
+              </div>
+              
+              <div className="mt-6 px-4 border-t border-gray-200 pt-6">
+                <nav className="space-y-1">
+                  {user ? (
+                    <>
+                      <Link
+                        to="/profile"
+                        className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50"
+                        onClick={toggleMenu}
+                      >
+                        Profile
+                      </Link>
+                      <Link
+                        to="/profile/orders"
+                        className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50"
+                        onClick={toggleMenu}
+                      >
+                        Orders
+                      </Link>
+                      <button
+                        onClick={handleLogout}
+                        className="block w-full text-left px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50"
+                      >
+                        Sign out
+                      </button>
+                    </>
+                  ) : (
+                    <>
+                      <Link
+                        to="/login"
+                        className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50"
+                        onClick={toggleMenu}
+                      >
+                        Sign in
+                      </Link>
+                      <Link
+                        to="/register"
+                        className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50"
+                        onClick={toggleMenu}
+                      >
+                        Sign up
+                      </Link>
+                    </>
+                  )}
+                </nav>
+              </div>
             </div>
           </div>
         </div>
-      </div>
+      )}
     </div>
   );
 };

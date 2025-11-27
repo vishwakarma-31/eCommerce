@@ -1,184 +1,114 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { useCart } from '../../context/CartContext';
-import CartReviewStep from './CartReviewStep';
-import ShippingAddressStep from './ShippingAddressStep';
-import PaymentStep from './PaymentStep';
-import ReviewConfirmStep from './ReviewConfirmStep';
-import OrderConfirmationStep from './OrderConfirmationStep';
-import GuestCheckoutStep from './GuestCheckoutStep';
-import ProgressBar from '../product/ProgressBar';
+import Button from '../common/Button';
+import Input from '../common/Input';
+import AddressForm from './AddressForm';
+import OrderSummary from './OrderSummary';
 
 const MultiStepCheckout = () => {
-  const { isAuthenticated, currentUser } = useAuth();
-  const { cart, cartItems, cartTotal, clearCart } = useCart();
   const navigate = useNavigate();
-  
-  // Checkout steps
+  const { user } = useAuth();
+  const { cartItems, getTotalPrice } = useCart();
   const [currentStep, setCurrentStep] = useState(1);
-  const [orderData, setOrderData] = useState({
-    items: [],
-    shippingAddress: null,
-    paymentMethod: null,
-    couponCode: null,
-    stripePaymentIntentId: null
+  const [shippingInfo, setShippingInfo] = useState({
+    firstName: '',
+    lastName: '',
+    address: '',
+    city: '',
+    state: '',
+    zipCode: '',
+    country: 'United States',
+    phone: ''
   });
-  const [order, setOrder] = useState(null);
-  const [processing, setProcessing] = useState(false);
-  const [error, setError] = useState(null);
+  const [billingInfo, setBillingInfo] = useState({
+    firstName: '',
+    lastName: '',
+    address: '',
+    city: '',
+    state: '',
+    zipCode: '',
+    country: 'United States',
+    phone: ''
+  });
+  const [sameAsShipping, setSameAsShipping] = useState(true);
+  const [orderNotes, setOrderNotes] = useState('');
 
-  // Initialize order data with cart items
-  useEffect(() => {
-    if (cartItems && cartItems.length > 0) {
-      setOrderData(prev => ({
-        ...prev,
-        items: cartItems.map(item => ({
-          product: item.product._id,
-          quantity: item.quantity,
-          price: item.product.price
-        }))
-      }));
+  // Initialize billing info with shipping info if sameAsShipping is true
+  React.useEffect(() => {
+    if (sameAsShipping) {
+      setBillingInfo(shippingInfo);
     }
-  }, [cartItems]);
+  }, [sameAsShipping, shippingInfo]);
 
-  // Redirect if cart is empty
-  useEffect(() => {
-    if (cartItems && cartItems.length === 0) {
-      navigate('/cart');
-    }
-  }, [cartItems, navigate]);
+  const handleShippingInfoChange = (field, value) => {
+    setShippingInfo(prev => ({
+      ...prev,
+      [field]: value
+    }));
+  };
 
-  // Handle step navigation
-  const nextStep = () => {
-    if (currentStep < 5) {
+  const handleBillingInfoChange = (field, value) => {
+    setBillingInfo(prev => ({
+      ...prev,
+      [field]: value
+    }));
+  };
+
+  const handleNext = () => {
+    if (currentStep < 3) {
       setCurrentStep(currentStep + 1);
     }
   };
 
-  const prevStep = () => {
+  const handlePrev = () => {
     if (currentStep > 1) {
       setCurrentStep(currentStep - 1);
     }
   };
 
-  // Update order data
-  const updateOrderData = (data) => {
-    setOrderData(prev => ({ ...prev, ...data }));
-  };
-
-  // Handle order placement
-  const placeOrder = async () => {
-    setProcessing(true);
-    setError(null);
+  const handleSubmitOrder = () => {
+    // In a real application, this would submit the order to the backend
+    console.log('Order submitted:', {
+      shippingInfo,
+      billingInfo: sameAsShipping ? shippingInfo : billingInfo,
+      orderNotes,
+      cartItems,
+      total: getTotalPrice()
+    });
     
-    try {
-      // In a real implementation, this would call the order service
-      // For now, we'll simulate order creation
-      const newOrder = {
-        _id: 'order-' + Date.now(),
-        orderNumber: 'ORD-' + Math.floor(100000 + Math.random() * 900000),
-        items: orderData.items,
-        totalAmount: cartTotal,
-        shippingAddress: orderData.shippingAddress,
-        paymentMethod: orderData.paymentMethod,
-        createdAt: new Date(),
-        estimatedDelivery: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000) // 3 days from now
-      };
-      
-      setOrder(newOrder);
-      clearCart();
-      nextStep(); // Move to confirmation step
-    } catch (err) {
-      setError(err.message || 'Failed to place order');
-    } finally {
-      setProcessing(false);
-    }
+    // Navigate to order confirmation page
+    navigate('/profile/orders', { 
+      state: { 
+        message: 'Your order has been placed successfully!' 
+      } 
+    });
   };
 
-  // Render step content
-  const renderStep = () => {
-    switch (currentStep) {
-      case 1:
-        return (
-          <CartReviewStep 
-            onNext={nextStep}
-            onUpdateOrderData={updateOrderData}
-            orderData={orderData}
-          />
-        );
-      case 2:
-        return (
-          <ShippingAddressStep 
-            onNext={nextStep}
-            onPrev={prevStep}
-            onUpdateOrderData={updateOrderData}
-            orderData={orderData}
-          />
-        );
-      case 3:
-        return (
-          <PaymentStep 
-            onNext={nextStep}
-            onPrev={prevStep}
-            onUpdateOrderData={updateOrderData}
-            orderData={orderData}
-            cartTotal={cartTotal}
-          />
-        );
-      case 4:
-        return (
-          <ReviewConfirmStep 
-            onNext={placeOrder}
-            onPrev={prevStep}
-            orderData={orderData}
-            cartTotal={cartTotal}
-            processing={processing}
-          />
-        );
-      case 5:
-        return (
-          <OrderConfirmationStep 
-            order={order}
-            onContinueShopping={() => navigate('/products')}
-          />
-        );
-      default:
-        return null;
-    }
-  };
-
-  // Step titles
-  const stepTitles = [
-    'Cart Review',
-    'Shipping Address',
-    'Payment',
-    'Review & Confirm',
-    'Confirmation'
-  ];
-
-  // For guest users, show guest checkout step
-  if (!isAuthenticated) {
+  if (!user) {
     return (
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <GuestCheckoutStep />
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div className="text-center">
+          <h2 className="text-2xl font-bold text-gray-900 mb-2">Please log in</h2>
+          <p className="text-gray-600 mb-6">You need to be logged in to checkout.</p>
+          <Button onClick={() => navigate('/login')}>
+            Go to Login
+          </Button>
+        </div>
       </div>
     );
   }
 
-  // For authenticated users with empty cart
-  if (cartItems && cartItems.length === 0) {
+  if (cartItems.length === 0) {
     return (
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="text-center">
           <h2 className="text-2xl font-bold text-gray-900 mb-2">Your cart is empty</h2>
-          <p className="text-gray-600 mb-6">Add some products to your cart before checking out.</p>
-          <button
-            onClick={() => navigate('/products')}
-            className="inline-flex items-center px-4 py-2 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-          >
+          <p className="text-gray-600 mb-6">Add some items to your cart before checking out.</p>
+          <Button onClick={() => navigate('/products')}>
             Browse Products
-          </button>
+          </Button>
         </div>
       </div>
     );
@@ -194,33 +124,140 @@ const MultiStepCheckout = () => {
         </div>
       </div>
 
-      {/* Progress Bar */}
+      {/* Progress Steps */}
       <div className="mb-8">
-        <ProgressBar 
-          currentStep={currentStep}
-          totalSteps={5}
-          stepTitles={stepTitles}
-        />
+        <ol className="flex items-center w-full text-sm font-medium text-center text-gray-500 dark:text-gray-400 sm:text-base">
+          <li className={`flex md:w-full items-center ${currentStep >= 1 ? 'text-blue-600 dark:text-blue-500' : ''} after:content-[''] after:w-full after:h-1 after:border-b after:border-gray-200 after:border-1 after:inline-block`}>
+            <span className="flex items-center after:content-['/'] after:mx-2 after:text-gray-200 dark:after:text-gray-500">
+              <span className={`flex items-center justify-center w-6 h-6 rounded-full ${currentStep >= 1 ? 'bg-blue-100 text-blue-600' : 'bg-gray-100'} mr-2`}>
+                1
+              </span>
+              Shipping
+            </span>
+          </li>
+          <li className={`flex md:w-full items-center ${currentStep >= 2 ? 'text-blue-600 dark:text-blue-500' : ''} after:content-[''] after:w-full after:h-1 after:border-b after:border-gray-200 after:border-1 after:inline-block`}>
+            <span className="flex items-center after:content-['/'] after:mx-2 after:text-gray-200 dark:after:text-gray-500">
+              <span className={`flex items-center justify-center w-6 h-6 rounded-full ${currentStep >= 2 ? 'bg-blue-100 text-blue-600' : 'bg-gray-100'} mr-2`}>
+                2
+              </span>
+              Billing
+            </span>
+          </li>
+          <li className={`flex md:w-full items-center ${currentStep >= 3 ? 'text-blue-600 dark:text-blue-500' : ''}`}>
+            <span className="flex items-center">
+              <span className={`flex items-center justify-center w-6 h-6 rounded-full ${currentStep >= 3 ? 'bg-blue-100 text-blue-600' : 'bg-gray-100'} mr-2`}>
+                3
+              </span>
+              Review
+            </span>
+          </li>
+        </ol>
       </div>
 
-      {error && (
-        <div className="mb-6 bg-red-50 border-l-4 border-red-400 p-4">
-          <div className="flex">
-            <div className="flex-shrink-0">
-              <svg className="h-5 w-5 text-red-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
-              </svg>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="lg:col-span-2">
+          {currentStep === 1 && (
+            <div className="bg-white shadow rounded-lg p-6">
+              <h3 className="text-lg font-medium text-gray-900 mb-4">Shipping Information</h3>
+              <AddressForm 
+                formData={shippingInfo}
+                onFieldChange={handleShippingInfoChange}
+              />
+              <div className="mt-6">
+                <Button onClick={handleNext}>
+                  Continue to Billing
+                </Button>
+              </div>
             </div>
-            <div className="ml-3">
-              <p className="text-sm text-red-700">{error}</p>
-            </div>
-          </div>
-        </div>
-      )}
+          )}
 
-      {/* Step Content */}
-      <div className="bg-white rounded-lg shadow-md p-6">
-        {renderStep()}
+          {currentStep === 2 && (
+            <div className="bg-white shadow rounded-lg p-6">
+              <h3 className="text-lg font-medium text-gray-900 mb-4">Billing Information</h3>
+              <div className="mb-4">
+                <label className="flex items-center">
+                  <input
+                    type="checkbox"
+                    checked={sameAsShipping}
+                    onChange={(e) => setSameAsShipping(e.target.checked)}
+                    className="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                  />
+                  <span className="ml-2 text-sm text-gray-600">Same as shipping address</span>
+                </label>
+              </div>
+              
+              {!sameAsShipping && (
+                <AddressForm 
+                  formData={billingInfo}
+                  onFieldChange={handleBillingInfoChange}
+                />
+              )}
+              
+              <div className="mt-6 flex space-x-4">
+                <Button variant="outline" onClick={handlePrev}>
+                  Back
+                </Button>
+                <Button onClick={handleNext}>
+                  Continue to Review
+                </Button>
+              </div>
+            </div>
+          )}
+
+          {currentStep === 3 && (
+            <div className="bg-white shadow rounded-lg p-6">
+              <h3 className="text-lg font-medium text-gray-900 mb-4">Order Review</h3>
+              
+              <div className="mb-6">
+                <h4 className="text-md font-medium text-gray-900 mb-2">Shipping Address</h4>
+                <div className="text-sm text-gray-600">
+                  <p>{shippingInfo.firstName} {shippingInfo.lastName}</p>
+                  <p>{shippingInfo.address}</p>
+                  <p>{shippingInfo.city}, {shippingInfo.state} {shippingInfo.zipCode}</p>
+                  <p>{shippingInfo.country}</p>
+                  <p>{shippingInfo.phone}</p>
+                </div>
+              </div>
+              
+              {!sameAsShipping && (
+                <div className="mb-6">
+                  <h4 className="text-md font-medium text-gray-900 mb-2">Billing Address</h4>
+                  <div className="text-sm text-gray-600">
+                    <p>{billingInfo.firstName} {billingInfo.lastName}</p>
+                    <p>{billingInfo.address}</p>
+                    <p>{billingInfo.city}, {billingInfo.state} {billingInfo.zipCode}</p>
+                    <p>{billingInfo.country}</p>
+                    <p>{billingInfo.phone}</p>
+                  </div>
+                </div>
+              )}
+              
+              <div className="mb-6">
+                <h4 className="text-md font-medium text-gray-900 mb-2">Order Notes</h4>
+                <textarea
+                  value={orderNotes}
+                  onChange={(e) => setOrderNotes(e.target.value)}
+                  rows={3}
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                  placeholder="Any special instructions for your order..."
+                />
+              </div>
+              
+              <div className="mt-6 flex space-x-4">
+                <Button variant="outline" onClick={handlePrev}>
+                  Back
+                </Button>
+                <Button onClick={handleSubmitOrder}>
+                  Place Order
+                </Button>
+              </div>
+            </div>
+          )}
+        </div>
+        
+        <div className="lg:col-span-1">
+          <OrderSummary />
+        </div>
       </div>
     </div>
   );

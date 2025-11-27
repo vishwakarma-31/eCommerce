@@ -17,16 +17,6 @@ const ReviewConfirmStep = ({ onNext, onPrev, orderData, cartTotal, processing })
     return `${address.street}, ${address.city}, ${address.state} ${address.zipCode}, ${address.country}`;
   };
 
-  // Get payment method label
-  const getPaymentMethodLabel = (method) => {
-    switch (method) {
-      case 'card': return 'Credit/Debit Card';
-      case 'cod': return 'Cash on Delivery';
-      case 'upi': return 'UPI Payment';
-      default: return method;
-    }
-  };
-
   return (
     <div>
       <h3 className="text-lg font-medium text-gray-900 mb-6">Review your order</h3>
@@ -91,22 +81,15 @@ const ReviewConfirmStep = ({ onNext, onPrev, orderData, cartTotal, processing })
             </div>
           </div>
           
-          {/* Payment Method */}
+          {/* Order Information */}
           <div className="bg-white rounded-lg shadow-sm border border-gray-200">
             <div className="px-4 py-3 border-b border-gray-200">
-              <h4 className="text-md font-medium text-gray-900">Payment Method</h4>
+              <h4 className="text-md font-medium text-gray-900">Order Information</h4>
             </div>
             <div className="p-4">
               <p className="text-gray-900">
-                {getPaymentMethodLabel(orderData.paymentMethod)}
+                Your order will be processed and shipped to the address above.
               </p>
-              {orderData.paymentMethod === 'card' && orderData.cardData && (
-                <div className="mt-2">
-                  <p className="text-gray-500">
-                    Card ending in {orderData.cardData.cardNumber.slice(-4)}
-                  </p>
-                </div>
-              )}
             </div>
           </div>
         </div>

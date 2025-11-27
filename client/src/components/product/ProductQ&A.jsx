@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
-import { productService } from '../../services/productService';
+import productService from '../../services/productService';
 import Button from '../common/Button';
 import Loader from '../common/Loader';
 

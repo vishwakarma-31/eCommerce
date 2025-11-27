@@ -4,9 +4,9 @@ import { visualizer } from 'rollup-plugin-visualizer'
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  // Set base path for CDN deployment
-  // In production, this should be set to your CDN URL
-  base: process.env.VITE_APP_BASE_URL || (process.env.NODE_ENV === 'production' ? 'https://cdn.example.com/' : '/'),
+  // Set base path for production deployment
+  // In production, this should use the environment variable or default to '/'
+  base: process.env.VITE_APP_BASE_URL || '/',
   plugins: [
     react(),
     visualizer({
