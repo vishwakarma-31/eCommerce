@@ -45,7 +45,7 @@ LaunchPad Market is a modern e-commerce platform with crowdfunding capabilities 
 
 ### Advanced Features
 - **Multi-step Checkout** - Complete checkout flow with multiple steps and guest checkout
-- **Multiple Payment Methods** - Stripe, PayPal, and Cash on Delivery with webhook handling
+- **Simple Checkout** - Streamlined checkout flow without payment processing
 - **Responsive Design** - Mobile-first design with touch optimizations
 - **PWA Support** - Progressive Web App capabilities with offline support
 - **Real-time Features** - Live chat, order updates, and notifications via Socket.io
@@ -75,8 +75,7 @@ LaunchPad Market is a modern e-commerce platform with crowdfunding capabilities 
 - **Node.js** with Express.js v5
 - **MongoDB** with Mongoose ODM
 - **JWT** for authentication
-- **Stripe** for payment processing
-- **PayPal** for alternative payment processing
+
 - **Socket.io** for real-time features
 - **Nodemailer** for email notifications
 - **Cloudinary** for image hosting
@@ -108,7 +107,7 @@ The platform follows a client-server architecture with the following components:
 1. **Frontend Client**: React application running in the browser
 2. **Backend API**: Node.js/Express.js server providing RESTful APIs
 3. **Database**: MongoDB for data persistence
-4. **External Services**: Stripe, PayPal, Cloudinary, Email services
+4. **External Services**: Cloudinary, Email services
 
 ### Data Flow
 1. User interacts with React frontend
@@ -175,16 +174,6 @@ MONGO_URI=mongodb+srv://your_username:your_password@cluster0.xxxxx.mongodb.net/l
 JWT_SECRET=your_super_secret_jwt_key_here
 JWT_EXPIRE=24h
 
-# Stripe
-STRIPE_SECRET_KEY=sk_test_your_stripe_secret_key
-STRIPE_PUBLISHABLE_KEY=pk_test_your_stripe_publishable_key
-STRIPE_WEBHOOK_SECRET=whsec_your_webhook_secret
-
-# PayPal
-PAYPAL_MODE=sandbox
-PAYPAL_CLIENT_ID=your_paypal_client_id
-PAYPAL_CLIENT_SECRET=your_paypal_client_secret
-
 # Email (for notifications)
 EMAIL_HOST=smtp.gmail.com
 EMAIL_PORT=587
@@ -203,7 +192,6 @@ CLIENT_URL=http://localhost:5173
 ### Frontend (.env)
 ```env
 VITE_API_URL=http://localhost:5000/api
-VITE_STRIPE_PUBLISHABLE_KEY=pk_test_your_stripe_publishable_key
 ```
 
 ## Running the Application
@@ -276,7 +264,7 @@ npm run test:coverage
 ### Production Deployment
 1. Set `NODE_ENV=production` in backend .env
 2. Update database connection string in `MONGO_URI`
-3. Configure production URLs for Stripe, PayPal, and email services
+3. Configure production URLs for email services
 4. Build frontend for production: `npm run build`
 5. Serve built files from `client/dist`
 6. Start backend server with `npm start`
@@ -381,19 +369,21 @@ The platform includes comprehensive real-time functionality powered by Socket.io
 
 All real-time connections are secured with JWT authentication and role-based room management.
 
-## Payment Processing
+## Order Processing
 
-The platform supports multiple payment methods:
+The platform processes orders without requiring payment processing:
 
-1. **Stripe** - Credit and debit card payments with webhook handling
-2. **PayPal** - PayPal account payments with webhook handling
-3. **Cash on Delivery** - Payment at time of delivery
+1. **Order Creation** - Orders are created with shipping information
+2. **Order Management** - Admins can manage orders through different statuses
+3. **Order Tracking** - Users can track their order status
+4. **Order History** - Users can view their order history
 
-### Security Features
-- PCI compliance through Stripe and PayPal
-- Webhook verification for payment confirmations
-- Refund and cancellation handling
-- Payment status tracking
+### Order Statuses
+- **Processing** - Order is being processed
+- **Confirmed** - Order has been confirmed
+- **Shipped** - Order has been shipped
+- **Delivered** - Order has been delivered
+- **Cancelled** - Order has been cancelled
 
 ## Security Features
 

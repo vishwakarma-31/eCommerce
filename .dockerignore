@@ -1,0 +1,12 @@
+node_modules
+dist
+.env
+.git
+.gitignore
+README.md
+Dockerfile
+.dockerignore
+.github
+client/node_modules
+server/node_modules
+client/dist

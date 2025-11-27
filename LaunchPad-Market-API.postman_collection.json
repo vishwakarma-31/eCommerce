@@ -523,7 +523,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"productConceptId\": \"product_id\",\n  \"quantity\": 2,\n  \"stripePaymentIntentId\": \"pi_123\",\n  \"shippingAddress\": {\n    \"street\": \"123 Main St\",\n    \"city\": \"New York\",\n    \"state\": \"NY\",\n    \"zip\": \"10001\",\n    \"country\": \"USA\"\n  }\n}",
+              "raw": "{\n  \"productConceptId\": \"product_id\",\n  \"quantity\": 2,\n  \"shippingAddress\": {\n    \"street\": \"123 Main St\",\n    \"city\": \"New York\",\n    \"state\": \"NY\",\n    \"zip\": \"10001\",\n    \"country\": \"USA\"\n  }\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -641,8 +641,8 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"items\": [\n    {\n      \"product\": \"product_id\",\n      \"quantity\": 1\n    }\n  ],\n  \"paymentMethod\": \"card\",\n  \"stripePaymentIntentId\": \"pi_123\",\n  \"shippingAddress\": {\n    \"street\": \"123 Main St\",\n    \"city\": \"New York\",\n    \"state\": \"NY\",\n    \"zip\": \"10001\",\n    \"country\": \"USA\"\n  }\n}",
-              "options": {
+              "raw": "{\n  \"items\": [\n    {\n      \"product\": \"product_id\",\n      \"quantity\": 1\n    }\n  ],\n  \"shippingAddress\": {\n    \"street\": \"123 Main St\",\n    \"city\": \"New York\",\n    \"state\": \"NY\",\n    \"zip\": \"10001\",\n    \"country\": \"USA\"\n  }\n}"
+,              "options": {
                 "raw": {
                   "language": "json"
                 }
